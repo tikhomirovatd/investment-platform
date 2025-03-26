@@ -49,7 +49,7 @@ export default function Requests() {
   const getStatusBadge = (status: string) => {
     switch(status) {
       case 'NEW':
-        return <Badge className="bg-blue-100 text-blue-800">Новый</Badge>;
+        return <Badge className="bg-[rgb(235,230,250)] text-purple-800">Новый</Badge>;
       case 'IN_PROGRESS':
         return <Badge className="bg-yellow-100 text-yellow-800">В процессе</Badge>;
       case 'COMPLETED':
