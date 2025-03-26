@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { MainTabs } from "@/components/MainTabs";
 import { FilterBar } from "@/components/FilterBar";
-import { DataTable } from "@/components/DataTable";
+import { DataTable } from "@/components/DataTableSortable";
 import { Request, RequestFilter } from "@/lib/types";
 import { useNotification } from "@/layouts/MainLayout";
 import { CreateRequestModal } from "@/components/CreateRequestModal";

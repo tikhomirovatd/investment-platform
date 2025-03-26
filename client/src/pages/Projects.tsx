@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { MainTabs } from "@/components/MainTabs";
 import { FilterBar } from "@/components/FilterBar";
-import { DataTable } from "@/components/DataTable";
+import { DataTable } from "@/components/DataTableSortable";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Project, ProjectFilter } from "@/lib/types";
@@ -95,6 +95,7 @@ export default function Projects() {
       cell: (row: Project) => (
         <span className="font-medium">{row.name}</span>
       ),
+      sortable: true,
     },
     {
       key: "dealType",
@@ -104,15 +105,18 @@ export default function Projects() {
           {row.dealType === 'SALE' ? 'Продажа' : 'Инвестиции'}
         </Badge>
       ),
+      sortable: true,
     },
     {
       key: "industry",
       header: "Отрасль",
+      sortable: true,
     },
     {
       key: "createdAt",
       header: "Дата создания",
       cell: (row: Project) => formatDate(row.createdAt),
+      sortable: true,
     },
     {
       key: "isVisible",
@@ -124,6 +128,7 @@ export default function Projects() {
           className="data-[state=checked]:bg-[#3498DB]"
         />
       ),
+      sortable: false,
     },
   ];
 
