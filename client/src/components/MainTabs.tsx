@@ -14,7 +14,8 @@ export function MainTabs({ onCreateClick }: MainTabsProps) {
       <div className="pb-4 border-b border-gray-200">
         <Button 
           onClick={onCreateClick}
-          className="bg-[#3498DB] hover:bg-[#2980b9] text-white px-4 py-2 rounded-md flex items-center text-sm"
+          variant="accent"
+          className="flex items-center text-sm"
         >
           <Plus className="h-4 w-4 mr-1" />
           Создать
