@@ -51,7 +51,7 @@ export default function Requests() {
       case 'NEW':
         return <Badge className="bg-[rgb(235,230,250)] text-purple-800">Новый</Badge>;
       case 'IN_PROGRESS':
-        return <Badge className="bg-yellow-100 text-yellow-800">В процессе</Badge>;
+        return <Badge className="bg-[rgb(254,233,209)] text-orange-800">В процессе</Badge>;
       case 'COMPLETED':
         return <Badge className="bg-green-100 text-green-800">Завершен</Badge>;
       case 'REJECTED':
