@@ -125,7 +125,6 @@ export default function Projects() {
         <Switch 
           checked={row.isVisible}
           onCheckedChange={(checked) => toggleVisibility(row, checked)}
-          className="data-[state=checked]:bg-[#3498DB]"
         />
       ),
       sortable: false,
