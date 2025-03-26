@@ -68,6 +68,7 @@ export default function Requests() {
       cell: (row: Request) => (
         <span>{row.userType === 'SELLER' ? 'Продавец' : 'Покупатель'}</span>
       ),
+      sortable: true,
     },
     {
       key: "topic",
@@ -75,28 +76,34 @@ export default function Requests() {
       cell: (row: Request) => (
         <span className="font-medium">{row.topic}</span>
       ),
+      sortable: true,
     },
     {
       key: "createdAt",
       header: "Дата создания",
       cell: (row: Request) => formatDate(row.createdAt),
+      sortable: true,
     },
     {
       key: "status",
       header: "Статус",
       cell: (row: Request) => getStatusBadge(row.status),
+      sortable: true,
     },
     {
       key: "fullName",
       header: "Полное имя",
+      sortable: true,
     },
     {
       key: "phone",
       header: "Телефон",
+      sortable: true,
     },
     {
       key: "comments",
       header: "Комментарии",
+      sortable: false,
     },
   ];
 
