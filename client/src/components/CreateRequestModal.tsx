@@ -12,10 +12,15 @@ import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
+// Enum of allowed request topics
+const requestTopics = ["Заявка на размещение", "Доступ к платформе", "Вопросы по проекту"] as const;
+
 // Extend the insert schema with validation
 const requestFormSchema = z.object({
   userType: z.enum(["SELLER", "BUYER"]),
-  topic: z.string().min(3, { message: "Topic must be at least 3 characters" }),
+  topic: z.enum(requestTopics, {
+    errorMap: () => ({ message: "Выберите одну из доступных тем" }),
+  }),
   status: z.enum(["NEW", "IN_PROGRESS", "COMPLETED", "REJECTED"]).default("NEW"),
   fullName: z.string().min(2, { message: "Full name must be at least 2 characters" }),
   phone: z.string().optional(),
