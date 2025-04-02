@@ -14,6 +14,8 @@ export default function Requests() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [filter, setFilter] = useState<RequestFilter>({
     search: "",
+    userType: undefined,
+    status: undefined,
   });
 
   const { addNotification } = useNotification();
@@ -31,6 +33,14 @@ export default function Requests() {
         );
       }
       
+      if (filter.userType) {
+        filteredData = filteredData.filter(r => r.userType === filter.userType);
+      }
+      
+      if (filter.status) {
+        filteredData = filteredData.filter(r => r.status === filter.status);
+      }
+      
       return filteredData;
     }
   });
@@ -39,6 +49,20 @@ export default function Requests() {
     setFilter({
       ...filter,
       search: value,
+    });
+  };
+  
+  const handleTypeFilterChange = (value: string) => {
+    setFilter({
+      ...filter,
+      userType: value === 'ALL' ? undefined : value as 'SELLER' | 'BUYER',
+    });
+  };
+  
+  const handleStatusFilterChange = (value: string) => {
+    setFilter({
+      ...filter,
+      status: value === 'ALL' ? undefined : value as 'NEW' | 'IN_PROGRESS' | 'COMPLETED' | 'REJECTED',
     });
   };
 
@@ -116,6 +140,20 @@ export default function Requests() {
           onSearchChange={handleSearch}
           onSortChange={(value) => console.log("Sort by:", value)}
           onFilterClick={() => console.log("Filter button clicked")}
+          onTypeFilterChange={handleTypeFilterChange}
+          typeFilterOptions={[
+            { value: "SELLER", label: "Продавец" },
+            { value: "BUYER", label: "Покупатель" }
+          ]}
+          typeFilterLabel="Тип пользователя"
+          onStatusFilterChange={handleStatusFilterChange}
+          statusFilterOptions={[
+            { value: "NEW", label: "Новый" },
+            { value: "IN_PROGRESS", label: "В процессе" },
+            { value: "COMPLETED", label: "Завершен" },
+            { value: "REJECTED", label: "Отклонен" }
+          ]}
+          statusFilterLabel="Статус"
           searchPlaceholder="Поиск по теме или имени"
         />
 

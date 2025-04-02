@@ -20,6 +20,7 @@ export default function Projects() {
   const [filter, setFilter] = useState<ProjectFilter>({
     search: "",
     isCompleted: false,
+    dealType: undefined,
   });
 
   const { addNotification } = useNotification();
@@ -35,6 +36,10 @@ export default function Projects() {
           p.name.toLowerCase().includes(searchLower) ||
           p.industry.toLowerCase().includes(searchLower)
         );
+      }
+      
+      if (filter.dealType) {
+        filteredData = filteredData.filter(p => p.dealType === filter.dealType);
       }
       
       return filteredData;
@@ -71,6 +76,13 @@ export default function Projects() {
     setFilter({
       ...filter,
       search: value,
+    });
+  };
+  
+  const handleDealTypeFilterChange = (value: string) => {
+    setFilter({
+      ...filter,
+      dealType: value === 'ALL' ? undefined : value as 'SALE' | 'INVESTMENT',
     });
   };
 
@@ -164,6 +176,12 @@ export default function Projects() {
           onSearchChange={handleSearch}
           onSortChange={(value) => console.log("Sort by:", value)}
           onFilterClick={() => console.log("Filter button clicked")}
+          onTypeFilterChange={handleDealTypeFilterChange}
+          typeFilterOptions={[
+            { value: "SALE", label: "Продажа" },
+            { value: "INVESTMENT", label: "Инвестиции" }
+          ]}
+          typeFilterLabel="Тип сделки"
           searchPlaceholder="Поиск по названию"
         />
 
