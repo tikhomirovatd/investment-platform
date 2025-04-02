@@ -271,7 +271,7 @@ export default function Requests() {
 
   return (
     <div>
-      <MainTabs onCreateClick={() => setIsCreateFormVisible(true)} />
+      {!isCreateFormVisible && <MainTabs onCreateClick={() => setIsCreateFormVisible(true)} />}
       
       {isCreateFormVisible ? (
         <CreateRequestForm
