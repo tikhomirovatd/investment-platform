@@ -6,12 +6,14 @@ import { DataTable } from "@/components/DataTableSortable";
 import { Request, RequestFilter } from "@/lib/types";
 import { useNotification } from "@/layouts/MainLayout";
 import { CreateRequestModal } from "@/components/CreateRequestModal";
+import { FilterModal } from "@/components/FilterModal";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 
 export default function Requests() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [filter, setFilter] = useState<RequestFilter>({
     search: "",
     userType: undefined,
@@ -139,7 +141,7 @@ export default function Requests() {
         <FilterBar 
           onSearchChange={handleSearch}
           onSortChange={(value) => console.log("Sort by:", value)}
-          onFilterClick={() => console.log("Filter button clicked")}
+          onFilterClick={() => setIsFilterModalOpen(true)}
           onTypeFilterChange={handleTypeFilterChange}
           typeFilterOptions={[
             { value: "SELLER", label: "Продавец" },
@@ -185,6 +187,33 @@ export default function Requests() {
             title: "Новый запрос создан" 
           });
         }}
+      />
+
+      <FilterModal 
+        isOpen={isFilterModalOpen}
+        onClose={() => setIsFilterModalOpen(false)}
+        onApply={(newFilters) => {
+          setFilter(newFilters);
+          addNotification({
+            type: "success",
+            title: "Фильтры применены"
+          });
+        }}
+        initialFilters={filter}
+        typeFilterOptions={[
+          { value: "SELLER", label: "Продавец" },
+          { value: "BUYER", label: "Покупатель" }
+        ]}
+        typeFilterLabel="Тип пользователя"
+        typeFieldName="userType"
+        statusFilterOptions={[
+          { value: "NEW", label: "Новый" },
+          { value: "IN_PROGRESS", label: "В процессе" },
+          { value: "COMPLETED", label: "Завершен" },
+          { value: "REJECTED", label: "Отклонен" }
+        ]}
+        statusFilterLabel="Статус"
+        statusFieldName="status"
       />
     </div>
   );

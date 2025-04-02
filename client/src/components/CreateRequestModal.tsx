@@ -104,9 +104,21 @@ export function CreateRequestModal({ isOpen, onClose, onSuccess }: CreateRequest
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Тема</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Введите тему запроса" {...field} />
-                  </FormControl>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Выберите тему запроса" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {requestTopics.map((topic) => (
+                        <SelectItem key={topic} value={topic}>{topic}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

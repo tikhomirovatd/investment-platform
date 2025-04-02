@@ -11,16 +11,19 @@ import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
 import { format } from "date-fns";
 import { CreateProjectModal } from "@/components/CreateProjectModal";
+import { FilterModal } from "@/components/FilterModal";
 import { Badge } from "@/components/ui/badge";
 import { ru } from "date-fns/locale";
 
 export default function Projects() {
   const [activeTab, setActiveTab] = useState<"active" | "completed">("active");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [filter, setFilter] = useState<ProjectFilter>({
     search: "",
     isCompleted: false,
     dealType: undefined,
+    industry: undefined,
   });
 
   const { addNotification } = useNotification();
@@ -40,6 +43,10 @@ export default function Projects() {
       
       if (filter.dealType) {
         filteredData = filteredData.filter(p => p.dealType === filter.dealType);
+      }
+      
+      if (filter.industry) {
+        filteredData = filteredData.filter(p => p.industry === filter.industry);
       }
       
       return filteredData;
@@ -175,7 +182,7 @@ export default function Projects() {
         <FilterBar 
           onSearchChange={handleSearch}
           onSortChange={(value) => console.log("Sort by:", value)}
-          onFilterClick={() => console.log("Filter button clicked")}
+          onFilterClick={() => setIsFilterModalOpen(true)}
           onTypeFilterChange={handleDealTypeFilterChange}
           typeFilterOptions={[
             { value: "SALE", label: "Продажа" },
@@ -215,6 +222,35 @@ export default function Projects() {
             title: "Новая карточка проекта создана" 
           });
         }}
+      />
+
+      <FilterModal 
+        isOpen={isFilterModalOpen}
+        onClose={() => setIsFilterModalOpen(false)}
+        onApply={(newFilters) => {
+          setFilter({...filter, ...newFilters});
+          addNotification({
+            type: "success",
+            title: "Фильтры применены"
+          });
+        }}
+        initialFilters={filter}
+        typeFilterOptions={[
+          { value: "SALE", label: "Продажа" },
+          { value: "INVESTMENT", label: "Инвестиции" }
+        ]}
+        typeFilterLabel="Тип сделки"
+        typeFieldName="dealType"
+        // Предполагаем, что у нас есть набор отраслей
+        statusFilterOptions={[
+          { value: "Энергетика", label: "Энергетика" },
+          { value: "Финансы", label: "Финансы" },
+          { value: "Технологии", label: "Технологии" },
+          { value: "Производство", label: "Производство" },
+          { value: "Розничная торговля", label: "Розничная торговля" }
+        ]}
+        statusFilterLabel="Отрасль"
+        statusFieldName="industry"
       />
     </div>
   );
