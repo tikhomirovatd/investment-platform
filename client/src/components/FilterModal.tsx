@@ -189,24 +189,6 @@ export function FilterModal({
           <DialogTitle>Фильтры</DialogTitle>
         </DialogHeader>
         
-        {activeFilters.length > 0 && (
-          <div className="flex flex-wrap gap-2 my-2">
-            {activeFilters.map((filter, index) => (
-              <Badge 
-                key={index} 
-                variant="outline" 
-                className="flex items-center gap-1 py-1 px-2"
-              >
-                {filter.label}
-                <X 
-                  className="h-3 w-3 cursor-pointer hover:text-destructive" 
-                  onClick={() => handleRemoveFilter(filter.key)}
-                />
-              </Badge>
-            ))}
-          </div>
-        )}
-        
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="search" className="text-right">

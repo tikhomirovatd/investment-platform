@@ -69,7 +69,7 @@ export default function Users() {
   const columns = [
     {
       key: "userType",
-      header: "Тип",
+      header: "Пользователь",
       cell: (row: User) => (
         <span>{row.userType === 'SELLER' ? 'Продавец' : 'Покупатель'}</span>
       ),

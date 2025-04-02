@@ -105,20 +105,137 @@ export class MemStorage implements IStorage {
     // Add initial requests
     this.createRequest({
       userType: 'SELLER',
-      topic: 'Selling retail business',
+      topic: 'Заявка на размещение',
       status: 'NEW',
-      fullName: 'Robert Johnson',
-      phone: '+1122334455',
-      comments: 'Looking for quick exit',
+      fullName: 'Иванов Петр Сергеевич',
+      phone: '+7 (900) 123-45-67',
+      comments: 'Хочу разместить свой проект на платформе',
     });
     
     this.createRequest({
       userType: 'BUYER',
-      topic: 'Seeking IT acquisition',
+      topic: 'Доступ к платформе',
       status: 'IN_PROGRESS',
-      fullName: 'Mary Williams',
-      phone: '+5566778899',
-      comments: 'Strategic expansion',
+      fullName: 'Смирнова Анна Ивановна',
+      phone: '+7 (911) 987-65-43',
+      comments: 'Необходим доступ к закрытым проектам',
+    });
+    
+    this.createRequest({
+      userType: 'SELLER',
+      topic: 'Вопросы по проекту',
+      status: 'COMPLETED',
+      fullName: 'Петров Алексей Владимирович',
+      phone: '+7 (922) 345-67-89',
+      comments: 'Требуется консультация по оформлению документов',
+    });
+    
+    this.createRequest({
+      userType: 'BUYER',
+      topic: 'Заявка на размещение',
+      status: 'REJECTED',
+      fullName: 'Козлов Дмитрий Андреевич',
+      phone: '+7 (933) 456-78-90',
+      comments: 'Не прошли требования по безопасности',
+    });
+    
+    this.createRequest({
+      userType: 'SELLER',
+      topic: 'Доступ к платформе',
+      status: 'NEW',
+      fullName: 'Соколова Екатерина Михайловна',
+      phone: '+7 (944) 567-89-01',
+      comments: 'Требуется расширенный доступ',
+    });
+    
+    this.createRequest({
+      userType: 'BUYER',
+      topic: 'Вопросы по проекту',
+      status: 'IN_PROGRESS',
+      fullName: 'Морозов Сергей Александрович',
+      phone: '+7 (955) 678-90-12',
+      comments: 'Необходима встреча для обсуждения деталей',
+    });
+    
+    this.createRequest({
+      userType: 'SELLER',
+      topic: 'Заявка на размещение',
+      status: 'COMPLETED',
+      fullName: 'Волкова Ольга Дмитриевна',
+      phone: '+7 (966) 789-01-23',
+      comments: 'Проект успешно размещен',
+    });
+    
+    this.createRequest({
+      userType: 'BUYER',
+      topic: 'Доступ к платформе',
+      status: 'REJECTED',
+      fullName: 'Зайцев Игорь Петрович',
+      phone: '+7 (977) 890-12-34',
+      comments: 'Отклонено из-за подозрительной активности',
+    });
+    
+    this.createRequest({
+      userType: 'SELLER',
+      topic: 'Вопросы по проекту',
+      status: 'NEW',
+      fullName: 'Лебедева Наталья Сергеевна',
+      phone: '+7 (988) 901-23-45',
+      comments: 'Нужна помощь с юридическими вопросами',
+    });
+    
+    this.createRequest({
+      userType: 'BUYER',
+      topic: 'Заявка на размещение',
+      status: 'IN_PROGRESS',
+      fullName: 'Семенов Виктор Александрович',
+      phone: '+7 (999) 012-34-56',
+      comments: 'В процессе подготовки документов',
+    });
+    
+    this.createRequest({
+      userType: 'SELLER',
+      topic: 'Доступ к платформе',
+      status: 'COMPLETED',
+      fullName: 'Егорова Марина Владимировна',
+      phone: '+7 (900) 234-56-78',
+      comments: 'Доступ предоставлен',
+    });
+    
+    this.createRequest({
+      userType: 'BUYER',
+      topic: 'Вопросы по проекту',
+      status: 'REJECTED',
+      fullName: 'Павлов Андрей Игоревич',
+      phone: '+7 (911) 345-67-89',
+      comments: 'Вопрос не относится к компетенции платформы',
+    });
+    
+    this.createRequest({
+      userType: 'SELLER',
+      topic: 'Заявка на размещение',
+      status: 'NEW',
+      fullName: 'Никитина Юлия Дмитриевна',
+      phone: '+7 (922) 456-78-90',
+      comments: 'Первичное размещение проекта',
+    });
+    
+    this.createRequest({
+      userType: 'BUYER',
+      topic: 'Доступ к платформе',
+      status: 'IN_PROGRESS',
+      fullName: 'Орлов Станислав Олегович',
+      phone: '+7 (933) 567-89-01',
+      comments: 'Проверка документов',
+    });
+    
+    this.createRequest({
+      userType: 'SELLER',
+      topic: 'Вопросы по проекту',
+      status: 'COMPLETED',
+      fullName: 'Крылова Елена Алексеевна',
+      phone: '+7 (944) 678-90-12',
+      comments: 'Все вопросы решены',
     });
   }
 
@@ -140,7 +257,13 @@ export class MemStorage implements IStorage {
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.userCurrentId++;
     const now = new Date();
-    const user: User = { ...insertUser, id, lastAccess: now };
+    const user: User = { 
+      ...insertUser, 
+      id, 
+      lastAccess: now,
+      phone: insertUser.phone || null,
+      comments: insertUser.comments || null
+    };
     this.users.set(id, user);
     return user;
   }
@@ -165,7 +288,13 @@ export class MemStorage implements IStorage {
   async createProject(insertProject: InsertProject): Promise<Project> {
     const id = this.projectCurrentId++;
     const now = new Date();
-    const project: Project = { ...insertProject, id, createdAt: now };
+    const project: Project = { 
+      ...insertProject, 
+      id, 
+      createdAt: now,
+      isVisible: insertProject.isVisible !== undefined ? insertProject.isVisible : true,
+      isCompleted: insertProject.isCompleted !== undefined ? insertProject.isCompleted : false
+    };
     this.projects.set(id, project);
     return project;
   }
@@ -195,7 +324,14 @@ export class MemStorage implements IStorage {
   async createRequest(insertRequest: InsertRequest): Promise<Request> {
     const id = this.requestCurrentId++;
     const now = new Date();
-    const request: Request = { ...insertRequest, id, createdAt: now };
+    const request: Request = { 
+      ...insertRequest, 
+      id, 
+      createdAt: now,
+      status: insertRequest.status || 'NEW',
+      phone: insertRequest.phone || null,
+      comments: insertRequest.comments || null
+    };
     this.requests.set(id, request);
     return request;
   }

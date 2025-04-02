@@ -5,15 +5,16 @@ import { FilterBar } from "@/components/FilterBar";
 import { DataTable } from "@/components/DataTableSortable";
 import { Request, RequestFilter } from "@/lib/types";
 import { useNotification } from "@/layouts/MainLayout";
-import { CreateRequestModal } from "@/components/CreateRequestModal";
+import { CreateRequestForm } from "@/components/CreateRequestForm";
 import { FilterModal } from "@/components/FilterModal";
 import { ActiveFilters } from "@/components/ActiveFilters";
+import { Pagination } from "@/components/Pagination";
 import { Badge } from "@/components/ui/badge";
 import { format, isAfter, isBefore, parseISO } from "date-fns";
 import { ru } from "date-fns/locale";
 
 export default function Requests() {
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isCreateFormVisible, setIsCreateFormVisible] = useState(false);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [filter, setFilter] = useState<RequestFilter & {
     phone?: string;
@@ -28,10 +29,18 @@ export default function Requests() {
     dateTo: undefined,
   });
   
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  
   const [activeFilters, setActiveFilters] = useState<Array<{ key: string; value: string; label: string }>>([]);
 
   const { addNotification } = useNotification();
   
+  // Сбрасываем страницу пагинации при изменении фильтров
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filter]);
+
   // Обновляем активные фильтры при изменении фильтров
   useEffect(() => {
     const newActiveFilters: { key: string; value: string; label: string }[] = [];
@@ -217,7 +226,7 @@ export default function Requests() {
   const columns = [
     {
       key: "userType",
-      header: "Тип",
+      header: "Пользователь",
       cell: (row: Request) => (
         <span>{row.userType === 'SELLER' ? 'Продавец' : 'Покупатель'}</span>
       ),
@@ -262,64 +271,71 @@ export default function Requests() {
 
   return (
     <div>
-      <MainTabs onCreateClick={() => setIsCreateModalOpen(true)} />
+      <MainTabs onCreateClick={() => setIsCreateFormVisible(true)} />
       
-      <div className="mt-4">
-        <FilterBar 
-          onSearchChange={handleSearch}
-          onSortChange={(value) => console.log("Sort by:", value)}
-          onFilterClick={() => setIsFilterModalOpen(true)}
-          onTypeFilterChange={handleTypeFilterChange}
-          typeFilterOptions={[
-            { value: "SELLER", label: "Продавец" },
-            { value: "BUYER", label: "Покупатель" }
-          ]}
-          typeFilterLabel="Тип пользователя"
-          onStatusFilterChange={handleStatusFilterChange}
-          statusFilterOptions={[
-            { value: "NEW", label: "Новый" },
-            { value: "IN_PROGRESS", label: "В процессе" },
-            { value: "COMPLETED", label: "Завершен" },
-            { value: "REJECTED", label: "Отклонен" }
-          ]}
-          statusFilterLabel="Статус"
-          searchPlaceholder="Поиск по теме или имени"
+      {isCreateFormVisible ? (
+        <CreateRequestForm
+          onBack={() => setIsCreateFormVisible(false)}
+          onSuccess={() => {
+            addNotification({ 
+              type: "success", 
+              title: "Новый запрос создан" 
+            });
+          }}
         />
+      ) : (
+        <div className="mt-4">
+          <FilterBar 
+            onSearchChange={handleSearch}
+            onSortChange={(value) => console.log("Sort by:", value)}
+            onFilterClick={() => setIsFilterModalOpen(true)}
+            onTypeFilterChange={handleTypeFilterChange}
+            typeFilterOptions={[
+              { value: "SELLER", label: "Продавец" },
+              { value: "BUYER", label: "Покупатель" }
+            ]}
+            typeFilterLabel="Тип пользователя"
+            onStatusFilterChange={handleStatusFilterChange}
+            statusFilterOptions={[
+              { value: "NEW", label: "Новый" },
+              { value: "IN_PROGRESS", label: "В процессе" },
+              { value: "COMPLETED", label: "Завершен" },
+              { value: "REJECTED", label: "Отклонен" }
+            ]}
+            statusFilterLabel="Статус"
+            searchPlaceholder="Поиск по теме или имени"
+          />
 
-        <ActiveFilters
-          filters={activeFilters}
-          onRemove={handleRemoveFilter}
-        />
+          <ActiveFilters
+            filters={activeFilters}
+            onRemove={handleRemoveFilter}
+          />
 
-        {isLoading ? (
-          <div className="flex justify-center py-8">Загрузка...</div>
-        ) : (
-          <>
-            <DataTable 
-              data={requests}
-              columns={columns}
-              keyField="id"
-            />
-            
-            <div className="mt-4 flex items-center justify-between">
-              <div className="text-sm text-gray-700">
-                Показано <span className="font-medium">1</span> - <span className="font-medium">{requests.length}</span> из <span className="font-medium">{requests.length}</span> запросов
+          {isLoading ? (
+            <div className="flex justify-center py-8">Загрузка...</div>
+          ) : (
+            <>
+              {/* Применяем пагинацию к данным */}
+              <DataTable 
+                data={requests.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)}
+                columns={columns}
+                keyField="id"
+              />
+              
+              <div className="mt-4 flex items-center justify-between">
+                <div className="text-sm text-gray-700">
+                  Показано <span className="font-medium">{Math.min(requests.length, 1 + (currentPage - 1) * itemsPerPage)}</span> - <span className="font-medium">{Math.min(currentPage * itemsPerPage, requests.length)}</span> из <span className="font-medium">{requests.length}</span> запросов
+                </div>
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={Math.ceil(requests.length / itemsPerPage)}
+                  onPageChange={setCurrentPage}
+                />
               </div>
-            </div>
-          </>
-        )}
-      </div>
-
-      <CreateRequestModal 
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onSuccess={() => {
-          addNotification({ 
-            type: "success", 
-            title: "Новый запрос создан" 
-          });
-        }}
-      />
+            </>
+          )}
+        </div>
+      )}
 
       <FilterModal 
         isOpen={isFilterModalOpen}
