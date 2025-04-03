@@ -2,7 +2,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { ArrowUpDown, ArrowUp, ArrowDown, Trash, Edit } from "lucide-react";
 
 interface Column<T> {
   key: string | keyof T;
@@ -122,7 +122,61 @@ export function DataTable<T>({
   };
 
   return (
-    <div className="mt-4 bg-white rounded-md shadow overflow-hidden">
+    <div className="mt-4 bg-white rounded-md shadow overflow-hidden relative">
+      {selectedItems.size > 0 && (
+        <div 
+          className="fixed bottom-8 z-50 left-1/2 transform -translate-x-1/2"
+          style={{
+            padding: "8px 70px 8px 32px",
+            background: "rgb(43, 45, 51)",
+            alignItems: "center",
+            display: "flex",
+            flexDirection: "row",
+            borderRadius: "8px",
+            height: "52px",
+            minWidth: "400px"
+          }}
+        >
+          <span className="text-white mr-4">Выбрано: {selectedItems.size}</span>
+          
+          {onEdit && (
+            <Button 
+              variant="ghost" 
+              className="text-white hover:bg-[#3d4048] mr-2 flex items-center gap-1"
+              onClick={() => {
+                // Находим первый выбранный элемент и редактируем его
+                if (onEdit && selectedItems.size > 0) {
+                  const selectedId = Array.from(selectedItems)[0];
+                  const selectedItem = data.find(item => item[keyField] === selectedId);
+                  if (selectedItem) onEdit(selectedItem);
+                }
+              }}
+            >
+              <Edit size={16} />
+              <span>Редактировать</span>
+            </Button>
+          )}
+          
+          {onDelete && (
+            <Button 
+              variant="ghost" 
+              className="text-white hover:bg-[#3d4048] flex items-center gap-1"
+              onClick={() => {
+                // Удаляем все выбранные элементы
+                if (onDelete && selectedItems.size > 0) {
+                  const selectedId = Array.from(selectedItems)[0];
+                  const selectedItem = data.find(item => item[keyField] === selectedId);
+                  if (selectedItem) onDelete(selectedItem);
+                }
+              }}
+            >
+              <Trash size={16} />
+              <span>Удалить</span>
+            </Button>
+          )}
+        </div>
+      )}
+      
       <div className="overflow-x-auto">
         <Table>
           <TableHeader className="bg-gray-50">
