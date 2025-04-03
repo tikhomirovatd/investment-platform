@@ -41,7 +41,7 @@ export function CreateRequestForm({ topic, onBack, onSuccess }: CreateRequestFor
   const form = useForm<RequestFormValues>({
     resolver: zodResolver(requestFormSchema),
     defaultValues: {
-      userType: "BUYER",
+      userType: topic === "Запрос доступа" ? "BUYER" : "BUYER", // Для "Запрос доступа" всегда "BUYER"
       topic: topic,
       fullName: "",
       phone: "",
@@ -94,27 +94,50 @@ export function CreateRequestForm({ topic, onBack, onSuccess }: CreateRequestFor
       
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 max-w-2xl">
-          <FormField
-            control={form.control}
-            name="userType"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Тип пользователя</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Выберите тип пользователя" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="SELLER">Продавец</SelectItem>
-                    <SelectItem value="BUYER">Покупатель</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {topic === "Запрос доступа" ? (
+            <FormField
+              control={form.control}
+              name="userType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Тип пользователя</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue="BUYER" disabled>
+                    <FormControl>
+                      <SelectTrigger className="bg-gray-50">
+                        <SelectValue placeholder="Выберите тип пользователя" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="BUYER">Покупатель</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          ) : (
+            <FormField
+              control={form.control}
+              name="userType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Тип пользователя</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Выберите тип пользователя" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="SELLER">Продавец</SelectItem>
+                      <SelectItem value="BUYER">Покупатель</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
           
           {/* Скрыто, так как тема уже выбрана */}
           <input type="hidden" {...form.register("topic")} />
