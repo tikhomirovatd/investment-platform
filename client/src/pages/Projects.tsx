@@ -156,27 +156,25 @@ export default function Projects() {
       
       <div className="mt-4">
         {/* Subtabs for Projects */}
-        <div className="flex mb-4">
-          <Button
-            variant={activeTab === "active" ? "default" : "outline"}
-            className={`mr-2 ${activeTab === "active" ? "bg-gray-800 text-white hover:bg-gray-700" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}
+        <div className="flex mb-4 gap-2">
+          <Badge 
+            className={`px-3 py-1.5 rounded-md cursor-pointer ${activeTab === "active" ? "bg-[rgb(240,236,236)]" : "bg-transparent border border-gray-300"}`}
             onClick={() => {
               setActiveTab("active");
               setFilter({...filter, isCompleted: false});
             }}
           >
             Активные
-          </Button>
-          <Button
-            variant={activeTab === "completed" ? "default" : "outline"}
-            className={activeTab === "completed" ? "bg-gray-800 text-white hover:bg-gray-700" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}
+          </Badge>
+          <Badge 
+            className={`px-3 py-1.5 rounded-md cursor-pointer ${activeTab === "completed" ? "bg-[rgb(240,236,236)]" : "bg-transparent border border-gray-300"}`}
             onClick={() => {
               setActiveTab("completed");
               setFilter({...filter, isCompleted: true});
             }}
           >
             Завершенные
-          </Button>
+          </Badge>
         </div>
 
         <FilterBar 
