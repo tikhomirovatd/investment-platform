@@ -301,7 +301,7 @@ export default function Requests() {
               { value: "SELLER", label: "Продавец" },
               { value: "BUYER", label: "Покупатель" }
             ]}
-            typeFilterLabel="Тип пользователя"
+            typeFilterLabel="Все пользователи"
             // onStatusFilterChange={handleStatusFilterChange}
             // statusFilterOptions={[
             //   { value: "NEW", label: "Новый" },
@@ -327,6 +327,14 @@ export default function Requests() {
                 data={requests.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)}
                 columns={columns}
                 keyField="id"
+                onEdit={(request) => {
+                  // В будущем здесь можно будет добавить редактирование запроса
+                  console.log("Edit request", request);
+                }}
+                onDelete={(request) => {
+                  // В будущем здесь можно будет добавить удаление запроса
+                  console.log("Delete request", request);
+                }}
               />
               
               <div className="mt-4 flex items-center justify-between">
@@ -359,7 +367,7 @@ export default function Requests() {
           { value: "SELLER", label: "Продавец" },
           { value: "BUYER", label: "Покупатель" }
         ]}
-        typeFilterLabel="Тип пользователя"
+        typeFilterLabel="Все пользователи"
         typeFieldName="userType"
         statusFilterOptions={[
           { value: "NEW", label: "Новый", color: "bg-[rgb(235,230,250)]" },

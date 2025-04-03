@@ -2,6 +2,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { Edit, Trash, X } from "lucide-react";
 
 interface Column<T> {
   key: string | keyof T;
@@ -49,7 +50,78 @@ export function DataTable<T>({
   };
 
   return (
-    <div className="mt-4 bg-white rounded-md shadow overflow-hidden">
+    <div className="mt-4 bg-white rounded-md shadow overflow-hidden relative">
+      {selectedItems.size > 0 && (
+        <div 
+          className="fixed bottom-8 z-50 mx-auto left-0 right-0"
+          style={{
+            padding: "8px 32px",
+            background: "rgb(43, 45, 51)",
+            alignItems: "center",
+            display: "flex",
+            flexDirection: "row",
+            borderRadius: "8px",
+            height: "52px",
+            justifyContent: "space-between",
+            maxWidth: "100%",
+            width: "100%"
+          }}
+        >
+          <div className="flex items-center">
+            <span className="text-white mr-4">Выбрано: {selectedItems.size}</span>
+            
+            {onEdit && selectedItems.size === 1 && (
+              <Button 
+                variant="ghost" 
+                className="text-white hover:bg-[#3d4048] mr-2 flex items-center gap-1"
+                onClick={() => {
+                  // Находим выбранный элемент и редактируем его
+                  const selectedId = Array.from(selectedItems)[0];
+                  const selectedItem = data.find(item => item[keyField] === selectedId);
+                  if (selectedItem) onEdit(selectedItem);
+                }}
+              >
+                <Edit size={16} />
+                <span>Редактировать</span>
+              </Button>
+            )}
+            
+            {onDelete && (
+              <Button 
+                variant="ghost" 
+                className="text-white hover:bg-[#3d4048] flex items-center gap-1"
+                onClick={() => {
+                  // Если выбрана только одна строка
+                  if (selectedItems.size === 1) {
+                    const selectedId = Array.from(selectedItems)[0];
+                    const selectedItem = data.find(item => item[keyField] === selectedId);
+                    if (selectedItem) onDelete(selectedItem);
+                  } 
+                  // Для множественного выбора пока запускаем то же действие для первого элемента
+                  // В будущем можно расширить функциональность для множественного удаления
+                  else if (selectedItems.size > 1) {
+                    const selectedId = Array.from(selectedItems)[0];
+                    const selectedItem = data.find(item => item[keyField] === selectedId);
+                    if (selectedItem) onDelete(selectedItem);
+                  }
+                }}
+              >
+                <Trash size={16} />
+                <span>Удалить</span>
+              </Button>
+            )}
+          </div>
+          
+          <Button
+            variant="ghost"
+            className="text-white hover:bg-[#3d4048] p-1 rounded-full h-8 w-8"
+            onClick={() => setSelectedItems(new Set())}
+          >
+            <X size={16} />
+          </Button>
+        </div>
+      )}
+      
       <div className="overflow-x-auto">
         <Table>
           <TableHeader className="bg-gray-50">

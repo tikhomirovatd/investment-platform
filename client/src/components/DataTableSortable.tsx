@@ -125,7 +125,7 @@ export function DataTable<T>({
     <div className="mt-4 bg-white rounded-md shadow overflow-hidden relative">
       {selectedItems.size > 0 && (
         <div 
-          className="fixed bottom-8 z-50 w-[calc(100%-64px)] max-w-[1200px] mx-auto left-0 right-0"
+          className="fixed bottom-8 z-50 mx-auto left-0 right-0"
           style={{
             padding: "8px 32px",
             background: "rgb(43, 45, 51)",
@@ -135,24 +135,22 @@ export function DataTable<T>({
             borderRadius: "8px",
             height: "52px",
             justifyContent: "space-between",
-            marginLeft: "32px",
-            marginRight: "32px"
+            maxWidth: "100%",
+            width: "100%"
           }}
         >
           <div className="flex items-center">
             <span className="text-white mr-4">Выбрано: {selectedItems.size}</span>
             
-            {onEdit && (
+            {onEdit && selectedItems.size === 1 && (
               <Button 
                 variant="ghost" 
                 className="text-white hover:bg-[#3d4048] mr-2 flex items-center gap-1"
                 onClick={() => {
-                  // Находим первый выбранный элемент и редактируем его
-                  if (onEdit && selectedItems.size > 0) {
-                    const selectedId = Array.from(selectedItems)[0];
-                    const selectedItem = data.find(item => item[keyField] === selectedId);
-                    if (selectedItem) onEdit(selectedItem);
-                  }
+                  // Находим выбранный элемент и редактируем его
+                  const selectedId = Array.from(selectedItems)[0];
+                  const selectedItem = data.find(item => item[keyField] === selectedId);
+                  if (selectedItem) onEdit(selectedItem);
                 }}
               >
                 <Edit size={16} />
@@ -165,8 +163,15 @@ export function DataTable<T>({
                 variant="ghost" 
                 className="text-white hover:bg-[#3d4048] flex items-center gap-1"
                 onClick={() => {
-                  // Удаляем все выбранные элементы
-                  if (onDelete && selectedItems.size > 0) {
+                  // Если выбрана только одна строка
+                  if (selectedItems.size === 1) {
+                    const selectedId = Array.from(selectedItems)[0];
+                    const selectedItem = data.find(item => item[keyField] === selectedId);
+                    if (selectedItem) onDelete(selectedItem);
+                  } 
+                  // Для множественного выбора пока запускаем то же действие для первого элемента
+                  // В будущем можно расширить функциональность для множественного удаления
+                  else if (selectedItems.size > 1) {
                     const selectedId = Array.from(selectedItems)[0];
                     const selectedItem = data.find(item => item[keyField] === selectedId);
                     if (selectedItem) onDelete(selectedItem);
