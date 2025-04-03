@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 
 // Список тем для запросов
-export const requestTopics = ["Заявка на размещение", "Доступ к платформе", "Вопросы по проекту"] as const;
+export const requestTopics = ["Заявка на размещение", "Запрос доступа", "Вопросы по проекту"] as const;
 
 interface SelectRequestTypeModalProps {
   isOpen: boolean;
