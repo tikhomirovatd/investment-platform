@@ -96,12 +96,12 @@ export function FilterBar({
           <div className="relative">
             <Select onValueChange={onSortChange}>
               <SelectTrigger className="w-[130px] h-10 text-sm">
-                <SelectValue placeholder="Newest" />
+                <SelectValue placeholder="Новые" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="newest">Newest</SelectItem>
-                <SelectItem value="oldest">Oldest</SelectItem>
-                <SelectItem value="alphabetical">Alphabetical</SelectItem>
+                <SelectItem value="newest">Новые</SelectItem>
+                <SelectItem value="oldest">Старые</SelectItem>
+                <SelectItem value="alphabetical">По названию</SelectItem>
               </SelectContent>
             </Select>
           </div>
