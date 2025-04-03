@@ -45,7 +45,7 @@ export function FilterBar({
         {onTypeFilterChange && typeFilterOptions && (
           <div className="relative mr-2">
             <Select onValueChange={onTypeFilterChange} defaultValue="ALL">
-              <SelectTrigger className="w-[150px] h-10 text-sm border border-gray-300">
+              <SelectTrigger className="w-[180px] h-10 text-sm border border-gray-300">
                 <SelectValue placeholder={typeFilterLabel} />
               </SelectTrigger>
               <SelectContent>

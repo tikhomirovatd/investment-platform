@@ -302,14 +302,14 @@ export default function Requests() {
               { value: "BUYER", label: "Покупатель" }
             ]}
             typeFilterLabel="Тип пользователя"
-            onStatusFilterChange={handleStatusFilterChange}
-            statusFilterOptions={[
-              { value: "NEW", label: "Новый" },
-              { value: "IN_PROGRESS", label: "В процессе" },
-              { value: "COMPLETED", label: "Завершен" },
-              { value: "REJECTED", label: "Отклонен" }
-            ]}
-            statusFilterLabel="Статус"
+            // onStatusFilterChange={handleStatusFilterChange}
+            // statusFilterOptions={[
+            //   { value: "NEW", label: "Новый" },
+            //   { value: "IN_PROGRESS", label: "В процессе" },
+            //   { value: "COMPLETED", label: "Завершен" },
+            //   { value: "REJECTED", label: "Отклонен" }
+            // ]}
+            // statusFilterLabel="Статус"
             searchPlaceholder="Поиск по теме или имени"
           />
 
