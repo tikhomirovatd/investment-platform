@@ -158,7 +158,11 @@ export default function Projects() {
         {/* Subtabs for Projects */}
         <div className="flex mb-4 gap-2">
           <Badge 
-            className={`px-3 py-1.5 rounded-md cursor-pointer ${activeTab === "active" ? "bg-[rgb(240,236,236)]" : "bg-transparent border border-gray-300"}`}
+            className={`px-4 py-2 rounded-full cursor-pointer ${
+              activeTab === "active" 
+                ? "bg-[#2B2D33] text-white" 
+                : "bg-[#F6F6F6] text-[#2B2D33] border border-gray-200"
+            }`}
             onClick={() => {
               setActiveTab("active");
               setFilter({...filter, isCompleted: false});
@@ -167,7 +171,11 @@ export default function Projects() {
             Активные
           </Badge>
           <Badge 
-            className={`px-3 py-1.5 rounded-md cursor-pointer ${activeTab === "completed" ? "bg-[rgb(240,236,236)]" : "bg-transparent border border-gray-300"}`}
+            className={`px-4 py-2 rounded-full cursor-pointer ${
+              activeTab === "completed" 
+                ? "bg-[#2B2D33] text-white" 
+                : "bg-[#F6F6F6] text-[#2B2D33] border border-gray-200"
+            }`}
             onClick={() => {
               setActiveTab("completed");
               setFilter({...filter, isCompleted: true});
