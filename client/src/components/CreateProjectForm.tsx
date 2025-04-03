@@ -123,7 +123,7 @@ export function CreateProjectForm({ onBack, onSuccess }: CreateProjectFormProps)
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="max-w-6xl">
           {/* 1. Способ связи */}
-          <div className="border rounded-lg p-6 mb-6">
+          <div className="bg-gray-50 rounded-lg p-6 mb-6">
             <h3 className="text-lg font-semibold mb-6">Способ связи</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -196,7 +196,7 @@ export function CreateProjectForm({ onBack, onSuccess }: CreateProjectFormProps)
           </div>
           
           {/* 2. Параметры */}
-          <div className="border rounded-lg p-6 mb-6">
+          <div className="bg-gray-50 rounded-lg p-6 mb-6">
             <h3 className="text-lg font-semibold mb-6">Параметры</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -411,7 +411,7 @@ export function CreateProjectForm({ onBack, onSuccess }: CreateProjectFormProps)
           </div>
           
           {/* Кнопки действий, зафиксированные внизу */}
-          <div className="fixed bottom-0 left-[240px] right-0 bg-white border-t p-4 flex justify-end space-x-4 z-10">
+          <div className="fixed bottom-0 left-[240px] right-0 bg-white border-t p-4 flex justify-start space-x-4 z-10">
             <Button 
               variant="outline" 
               type="button" 
