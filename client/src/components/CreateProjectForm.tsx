@@ -387,17 +387,20 @@ export function CreateProjectForm({ onBack, onSuccess }: CreateProjectFormProps)
                   control={form.control}
                   name="hideUntilNda"
                   render={({ field }) => (
-                    <FormItem className="mt-4 flex flex-row items-center justify-between space-y-0 rounded-md border p-4">
+                    <FormItem className="mt-4 flex flex-row items-center justify-between space-y-0 p-4">
                       <div className="space-y-1">
                         <FormLabel>Скрыть до NDA</FormLabel>
-                        <FormDescription className="text-xs">
-                          Информация будет скрыта до подписания NDA
-                        </FormDescription>
+                        {field.value && (
+                          <FormDescription className="text-xs">
+                            Информация будет скрыта до подписания NDA
+                          </FormDescription>
+                        )}
                       </div>
                       <FormControl>
                         <Switch
                           checked={field.value}
                           onCheckedChange={field.onChange}
+                          className="bg-gray-200 data-[state=checked]:bg-[#FEE600]"
                         />
                       </FormControl>
                     </FormItem>
@@ -408,7 +411,7 @@ export function CreateProjectForm({ onBack, onSuccess }: CreateProjectFormProps)
           </div>
           
           {/* Кнопки действий, зафиксированные внизу */}
-          <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 flex justify-end space-x-4">
+          <div className="fixed bottom-0 left-[240px] right-0 bg-white border-t p-4 flex justify-end space-x-4 z-10">
             <Button 
               variant="outline" 
               type="button" 
