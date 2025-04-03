@@ -49,7 +49,7 @@ export function FilterBar({
                 <SelectValue placeholder={typeFilterLabel} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="ALL">Все пользователи</SelectItem>
+                <SelectItem value="ALL">Все типы</SelectItem>
                 {typeFilterOptions.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
