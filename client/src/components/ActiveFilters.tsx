@@ -21,7 +21,7 @@ export function ActiveFilters({ filters, onRemove }: ActiveFiltersProps) {
         <Badge 
           key={index} 
           variant="outline" 
-          className="flex items-center gap-1 py-1.5 px-3"
+          className="flex items-center gap-1 py-1.5 px-3 bg-[rgb(240,236,236)]"
         >
           {filter.label}
           <X 
