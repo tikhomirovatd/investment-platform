@@ -88,7 +88,20 @@ export class MemStorage implements IStorage {
         industry: 'Food & Beverage',
         isVisible: true,
         isCompleted: false,
-        createdAt: new Date() // текущая дата (новый проект)
+        createdAt: new Date(), // текущая дата (новый проект)
+        contactName1: 'Иванов Петр Сергеевич',
+        contactPhone1: '+7 (900) 123-45-67',
+        contactPosition1: 'Генеральный директор',
+        contactPhone2: null,
+        inn: '1234567890',
+        location: 'Москва',
+        revenue: '120 млн ₽',
+        ebitda: '30 млн ₽',
+        price: '450 млн ₽',
+        salePercent: '100%',
+        website: 'foodprocessing.ru',
+        hideUntilNda: false,
+        comments: 'Перспективный проект'
       },
       {
         id: this.projectCurrentId++,
@@ -97,7 +110,20 @@ export class MemStorage implements IStorage {
         industry: 'Electronics',
         isVisible: true,
         isCompleted: false,
-        createdAt: new Date(new Date().setDate(new Date().getDate() - 3)) // 3 дня назад
+        createdAt: new Date(new Date().setDate(new Date().getDate() - 3)), // 3 дня назад
+        contactName1: 'Петров Алексей Владимирович',
+        contactPhone1: '+7 (922) 345-67-89',
+        contactPosition1: 'Финансовый директор',
+        contactPhone2: '+7 (922) 345-67-80',
+        inn: '0987654321',
+        location: 'Санкт-Петербург',
+        revenue: '350 млн ₽',
+        ebitda: '80 млн ₽',
+        price: '1200 млн ₽',
+        salePercent: '49%',
+        website: 'semiconductor.ru',
+        hideUntilNda: true,
+        comments: 'Требуются инвестиции в оборудование'
       },
       {
         id: this.projectCurrentId++,
@@ -106,7 +132,20 @@ export class MemStorage implements IStorage {
         industry: 'IT',
         isVisible: true,
         isCompleted: false,
-        createdAt: new Date(new Date().setDate(new Date().getDate() - 10)) // 10 дней назад
+        createdAt: new Date(new Date().setDate(new Date().getDate() - 10)), // 10 дней назад
+        contactName1: 'Смирнова Анна Ивановна',
+        contactPhone1: '+7 (911) 987-65-43',
+        contactPosition1: 'Руководитель отдела продаж',
+        contactPhone2: null,
+        inn: '5678901234',
+        location: 'Казань',
+        revenue: '80 млн ₽',
+        ebitda: '20 млн ₽',
+        price: '300 млн ₽',
+        salePercent: '100%',
+        website: 'itmanagement.ru',
+        hideUntilNda: false,
+        comments: 'Стабильный денежный поток'
       },
       {
         id: this.projectCurrentId++,
@@ -115,7 +154,20 @@ export class MemStorage implements IStorage {
         industry: 'Agriculture',
         isVisible: true,
         isCompleted: false,
-        createdAt: new Date(new Date().setDate(new Date().getDate() - 30)) // 30 дней назад
+        createdAt: new Date(new Date().setDate(new Date().getDate() - 30)), // 30 дней назад
+        contactName1: 'Козлов Дмитрий Андреевич',
+        contactPhone1: '+7 (933) 456-78-90',
+        contactPosition1: 'Собственник',
+        contactPhone2: null,
+        inn: '9012345678',
+        location: 'Краснодар',
+        revenue: '200 млн ₽',
+        ebitda: '50 млн ₽',
+        price: '600 млн ₽',
+        salePercent: '100%',
+        website: 'agro-complex.ru',
+        hideUntilNda: false,
+        comments: 'Земельный банк 5000 га'
       }
     ];
     
@@ -127,7 +179,24 @@ export class MemStorage implements IStorage {
     
     // Добавляем проекты в хранилище
     for (const project of projects) {
-      this.projects.set(project.id, project);
+      // Добавляем с правильными типами для null-значений
+      const fullProject: Project = {
+        ...project,
+        contactName1: project.contactName1 || null,
+        contactPhone1: project.contactPhone1 || null,
+        contactPosition1: project.contactPosition1 || null,
+        contactPhone2: project.contactPhone2 || null,
+        inn: project.inn || null,
+        location: project.location || null,
+        revenue: project.revenue || null,
+        ebitda: project.ebitda || null,
+        price: project.price || null,
+        salePercent: project.salePercent || null,
+        website: project.website || null,
+        hideUntilNda: project.hideUntilNda !== undefined ? project.hideUntilNda : false,
+        comments: project.comments || null
+      };
+      this.projects.set(fullProject.id, fullProject);
     }
     
     // Создаем запросы с разными датами
@@ -395,13 +464,31 @@ export class MemStorage implements IStorage {
   async createProject(insertProject: InsertProject): Promise<Project> {
     const id = this.projectCurrentId++;
     const now = new Date();
-    const project: Project = { 
-      ...insertProject, 
+    
+    // Создаем проект с правильными типами полей
+    const project: Project = {
       id, 
+      name: insertProject.name,
+      industry: insertProject.industry,
+      dealType: insertProject.dealType,
       createdAt: now,
       isVisible: insertProject.isVisible !== undefined ? insertProject.isVisible : true,
-      isCompleted: insertProject.isCompleted !== undefined ? insertProject.isCompleted : false
+      isCompleted: insertProject.isCompleted !== undefined ? insertProject.isCompleted : false,
+      contactName1: insertProject.contactName1 || null,
+      contactPhone1: insertProject.contactPhone1 || null,
+      contactPosition1: insertProject.contactPosition1 || null,
+      contactPhone2: insertProject.contactPhone2 || null,
+      inn: insertProject.inn || null,
+      location: insertProject.location || null,
+      revenue: insertProject.revenue || null,
+      ebitda: insertProject.ebitda || null,
+      price: insertProject.price || null,
+      salePercent: insertProject.salePercent || null,
+      website: insertProject.website || null,
+      hideUntilNda: insertProject.hideUntilNda !== undefined ? insertProject.hideUntilNda : false,
+      comments: insertProject.comments || null
     };
+    
     this.projects.set(id, project);
     return project;
   }

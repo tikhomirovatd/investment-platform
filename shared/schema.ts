@@ -29,6 +29,21 @@ export const projects = pgTable("projects", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   isVisible: boolean("is_visible").default(true).notNull(),
   isCompleted: boolean("is_completed").default(false).notNull(),
+  // Контактные данные
+  contactName1: text("contact_name1"),
+  contactPhone1: text("contact_phone1"),
+  contactPosition1: text("contact_position1"),
+  contactPhone2: text("contact_phone2"),
+  // Параметры бизнеса
+  inn: text("inn"),
+  location: text("location"),
+  revenue: text("revenue"),
+  ebitda: text("ebitda"),
+  price: text("price"),
+  salePercent: text("sale_percent"),
+  website: text("website"),
+  hideUntilNda: boolean("hide_until_nda").default(false),
+  comments: text("comments"),
 });
 
 // Requests table

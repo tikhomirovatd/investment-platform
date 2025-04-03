@@ -12,6 +12,7 @@ import { Pagination } from "@/components/Pagination";
 import { Badge } from "@/components/ui/badge";
 import { SelectRequestTypeModal, requestTopics } from "@/components/SelectRequestTypeModal";
 type RequestTopic = typeof requestTopics[number];
+import { CreateProjectForm } from "@/components/CreateProjectForm";
 import { format, isAfter, isBefore, parseISO } from "date-fns";
 import { ru } from "date-fns/locale";
 
@@ -278,19 +279,36 @@ export default function Requests() {
       {!isCreateFormVisible && <MainTabs onCreateClick={() => setIsSelectTypeModalOpen(true)} />}
       
       {isCreateFormVisible && selectedTopic ? (
-        <CreateRequestForm
-          topic={selectedTopic as RequestTopic}
-          onBack={() => {
-            setIsCreateFormVisible(false);
-            setSelectedTopic(null);
-          }}
-          onSuccess={() => {
-            addNotification({ 
-              type: "success", 
-              title: "Новый запрос создан" 
-            });
-          }}
-        />
+        selectedTopic === "Заявка на размещение" ? (
+          // Если выбрано "Заявка на размещение", показываем форму создания проекта
+          <CreateProjectForm
+            onBack={() => {
+              setIsCreateFormVisible(false);
+              setSelectedTopic(null);
+            }}
+            onSuccess={() => {
+              addNotification({ 
+                type: "success", 
+                title: "Новый проект создан" 
+              });
+            }}
+          />
+        ) : (
+          // Для других тем показываем стандартную форму запроса
+          <CreateRequestForm
+            topic={selectedTopic as RequestTopic}
+            onBack={() => {
+              setIsCreateFormVisible(false);
+              setSelectedTopic(null);
+            }}
+            onSuccess={() => {
+              addNotification({ 
+                type: "success", 
+                title: "Новый запрос создан" 
+              });
+            }}
+          />
+        )
       ) : (
         <div className="mt-4">
           <FilterBar 
