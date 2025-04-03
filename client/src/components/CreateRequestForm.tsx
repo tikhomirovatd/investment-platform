@@ -12,6 +12,8 @@ import { queryClient } from "@/lib/queryClient";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Badge } from "@/components/ui/badge";
 import { ChevronLeft } from "lucide-react";
+import { format } from "date-fns";
+import { ru } from "date-fns/locale";
 
 // Импортируем список тем из SelectRequestTypeModal
 import { requestTopics } from "./SelectRequestTypeModal";
@@ -87,7 +89,7 @@ export function CreateRequestForm({ topic, onBack, onSuccess }: CreateRequestFor
           <h2 className="text-2xl font-bold tracking-tight">{topic}</h2>
           <Badge className="bg-[rgb(235,230,250)] text-purple-800 hover:bg-[rgb(235,230,250)]">Новый</Badge>
         </div>
-        <p className="text-muted-foreground">Заполните форму для создания нового запроса</p>
+        <p className="text-muted-foreground">{format(new Date(), "d MMMM yyyy в HH:mm", { locale: ru })}</p>
       </div>
       
       <Form {...form}>
