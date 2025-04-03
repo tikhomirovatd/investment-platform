@@ -11,7 +11,7 @@ export function MainTabs({ onCreateClick }: MainTabsProps) {
 
   return (
     <div>
-      <div className="pb-4 border-b border-gray-200">
+      <div className="pb-4">
         <Button 
           onClick={onCreateClick}
           variant="accent"
