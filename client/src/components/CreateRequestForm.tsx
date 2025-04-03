@@ -99,144 +99,159 @@ export function CreateRequestForm({ topic, onBack, onSuccess }: CreateRequestFor
       </div>
       
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 max-w-2xl">
-          {topic === "Запрос доступа" ? (
-            <FormField
-              control={form.control}
-              name="userType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Пользователь</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue="BUYER" disabled>
-                    <FormControl>
-                      <SelectTrigger className="bg-gray-50">
-                        <SelectValue placeholder="Выберите тип пользователя" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="BUYER">Покупатель</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          ) : (
-            <FormField
-              control={form.control}
-              name="userType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Пользователь</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Выберите тип пользователя" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="SELLER">Продавец</SelectItem>
-                      <SelectItem value="BUYER">Покупатель</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          )}
-          
+        <form onSubmit={form.handleSubmit(onSubmit)} className="max-w-2xl">
           {/* Скрыто, так как тема уже выбрана */}
           <input type="hidden" {...form.register("topic")} />
           
-          <FormField
-            control={form.control}
-            name="fullName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>ФИО</FormLabel>
-                <FormControl>
-                  <Input placeholder="Введите ФИО" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Левый столбец */}
+            <div className="space-y-6">
+              {/* Пользователь */}
+              {topic === "Запрос доступа" ? (
+                <FormField
+                  control={form.control}
+                  name="userType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Пользователь</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue="BUYER" disabled>
+                        <FormControl>
+                          <SelectTrigger className="bg-gray-50">
+                            <SelectValue placeholder="Выберите тип пользователя" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="BUYER">Покупатель</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ) : (
+                <FormField
+                  control={form.control}
+                  name="userType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Пользователь</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Выберите тип пользователя" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="SELLER">Продавец</SelectItem>
+                          <SelectItem value="BUYER">Покупатель</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+              
+              {/* ФИО */}
+              <FormField
+                control={form.control}
+                name="fullName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>ФИО</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Введите ФИО" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              {/* CNUM */}
+              <FormField
+                control={form.control}
+                name="cnum"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>CNUM</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Введите CNUM" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              {/* Название организации */}
+              <FormField
+                control={form.control}
+                name="organizationName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Название организации</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Введите название организации" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              {/* Комментарий */}
+              <FormField
+                control={form.control}
+                name="comments"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Комментарий (От пользователя)</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Введите дополнительные комментарии"
+                        {...field}
+                        rows={4}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            
+            {/* Правый столбец */}
+            <div className="space-y-6">
+              {/* Телефон */}
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Телефон</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Введите номер телефона" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              {/* Логин */}
+              <FormField
+                control={form.control}
+                name="login"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Логин</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Введите логин" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
           
-          <FormField
-            control={form.control}
-            name="organizationName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Название организации</FormLabel>
-                <FormControl>
-                  <Input placeholder="Введите название организации" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="cnum"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>CNUM</FormLabel>
-                <FormControl>
-                  <Input placeholder="Введите CNUM" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="login"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Логин</FormLabel>
-                <FormControl>
-                  <Input placeholder="Введите логин" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="phone"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Телефон</FormLabel>
-                <FormControl>
-                  <Input placeholder="Введите номер телефона" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="comments"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Комментарий (От пользователя)</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Введите дополнительные комментарии"
-                    {...field}
-                    rows={4}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          <div className="flex justify-end space-x-4">
+          <div className="flex justify-end space-x-4 mt-8">
             <Button 
               variant="outline" 
               type="button" 
