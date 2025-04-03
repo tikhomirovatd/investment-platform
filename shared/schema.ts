@@ -39,6 +39,9 @@ export const requests = pgTable("requests", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   status: requestStatusEnum('status').default('NEW').notNull(),
   fullName: text("full_name").notNull(),
+  organizationName: text("organization_name"),
+  cnum: text("cnum"),
+  login: text("login"),
   phone: text("phone"),
   comments: text("comments"),
 });

@@ -108,15 +108,21 @@ export class MemStorage implements IStorage {
       topic: 'Заявка на размещение',
       status: 'NEW',
       fullName: 'Иванов Петр Сергеевич',
+      organizationName: 'АО "ИнвестФинанс"',
+      cnum: '123456',
+      login: 'ivanov_ps',
       phone: '+7 (900) 123-45-67',
       comments: 'Хочу разместить свой проект на платформе',
     });
     
     this.createRequest({
       userType: 'BUYER',
-      topic: 'Доступ к платформе',
+      topic: 'Запрос доступа',
       status: 'IN_PROGRESS',
       fullName: 'Смирнова Анна Ивановна',
+      organizationName: 'ООО "ТехИнвест"',
+      cnum: '789012',
+      login: 'smirnova_ai',
       phone: '+7 (911) 987-65-43',
       comments: 'Необходим доступ к закрытым проектам',
     });
@@ -141,9 +147,12 @@ export class MemStorage implements IStorage {
     
     this.createRequest({
       userType: 'SELLER',
-      topic: 'Доступ к платформе',
+      topic: 'Запрос доступа',
       status: 'NEW',
       fullName: 'Соколова Екатерина Михайловна',
+      organizationName: 'ЗАО "ИнвестСтрой"',
+      cnum: '345678',
+      login: 'sokolova_em',
       phone: '+7 (944) 567-89-01',
       comments: 'Требуется расширенный доступ',
     });
@@ -168,9 +177,12 @@ export class MemStorage implements IStorage {
     
     this.createRequest({
       userType: 'BUYER',
-      topic: 'Доступ к платформе',
+      topic: 'Запрос доступа',
       status: 'REJECTED',
       fullName: 'Зайцев Игорь Петрович',
+      organizationName: 'ООО "АгроПром"',
+      cnum: '456789',
+      login: 'zaitsev_ip',
       phone: '+7 (977) 890-12-34',
       comments: 'Отклонено из-за подозрительной активности',
     });
@@ -195,9 +207,12 @@ export class MemStorage implements IStorage {
     
     this.createRequest({
       userType: 'SELLER',
-      topic: 'Доступ к платформе',
+      topic: 'Запрос доступа',
       status: 'COMPLETED',
       fullName: 'Егорова Марина Владимировна',
+      organizationName: 'ПАО "ФинансГрупп"',
+      cnum: '567890',
+      login: 'egorova_mv',
       phone: '+7 (900) 234-56-78',
       comments: 'Доступ предоставлен',
     });
@@ -222,9 +237,12 @@ export class MemStorage implements IStorage {
     
     this.createRequest({
       userType: 'BUYER',
-      topic: 'Доступ к платформе',
+      topic: 'Запрос доступа',
       status: 'IN_PROGRESS',
       fullName: 'Орлов Станислав Олегович',
+      organizationName: 'ООО "ИнТрейд"',
+      cnum: '678901',
+      login: 'orlov_so',
       phone: '+7 (933) 567-89-01',
       comments: 'Проверка документов',
     });
@@ -329,6 +347,9 @@ export class MemStorage implements IStorage {
       id, 
       createdAt: now,
       status: insertRequest.status || 'NEW',
+      organizationName: insertRequest.organizationName || null,
+      cnum: insertRequest.cnum || null,
+      login: insertRequest.login || null,
       phone: insertRequest.phone || null,
       comments: insertRequest.comments || null
     };

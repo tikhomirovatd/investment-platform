@@ -31,6 +31,9 @@ export interface Request {
   createdAt: Date;
   status: RequestStatus;
   fullName: string;
+  organizationName?: string;
+  cnum?: string;
+  login?: string;
   phone?: string;
   comments?: string;
 }

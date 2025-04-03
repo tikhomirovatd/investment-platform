@@ -22,7 +22,10 @@ import { requestTopics } from "./SelectRequestTypeModal";
 const requestFormSchema = z.object({
   userType: z.enum(["SELLER", "BUYER"]),
   topic: z.string().min(1, { message: "Тема запроса обязательна" }),
-  fullName: z.string().min(2, { message: "Полное имя должно содержать не менее 2 символов" }),
+  fullName: z.string().min(2, { message: "ФИО должно содержать не менее 2 символов" }),
+  organizationName: z.string().optional(),
+  cnum: z.string().optional(),
+  login: z.string().optional(),
   phone: z.string().optional(),
   comments: z.string().optional(),
 });
@@ -44,6 +47,9 @@ export function CreateRequestForm({ topic, onBack, onSuccess }: CreateRequestFor
       userType: topic === "Запрос доступа" ? "BUYER" : "BUYER", // Для "Запрос доступа" всегда "BUYER"
       topic: topic,
       fullName: "",
+      organizationName: "",
+      cnum: "",
+      login: "",
       phone: "",
       comments: "",
     },
@@ -100,7 +106,7 @@ export function CreateRequestForm({ topic, onBack, onSuccess }: CreateRequestFor
               name="userType"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Тип пользователя</FormLabel>
+                  <FormLabel>Пользователь</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue="BUYER" disabled>
                     <FormControl>
                       <SelectTrigger className="bg-gray-50">
@@ -121,7 +127,7 @@ export function CreateRequestForm({ topic, onBack, onSuccess }: CreateRequestFor
               name="userType"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Тип пользователя</FormLabel>
+                  <FormLabel>Пользователь</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
@@ -147,9 +153,51 @@ export function CreateRequestForm({ topic, onBack, onSuccess }: CreateRequestFor
             name="fullName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Полное имя</FormLabel>
+                <FormLabel>ФИО</FormLabel>
                 <FormControl>
-                  <Input placeholder="Введите полное имя" {...field} />
+                  <Input placeholder="Введите ФИО" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name="organizationName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Название организации</FormLabel>
+                <FormControl>
+                  <Input placeholder="Введите название организации" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="cnum"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>CNUM</FormLabel>
+                <FormControl>
+                  <Input placeholder="Введите CNUM" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="login"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Логин</FormLabel>
+                <FormControl>
+                  <Input placeholder="Введите логин" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -175,7 +223,7 @@ export function CreateRequestForm({ topic, onBack, onSuccess }: CreateRequestFor
             name="comments"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Комментарии</FormLabel>
+                <FormLabel>Комментарий (От пользователя)</FormLabel>
                 <FormControl>
                   <Textarea
                     placeholder="Введите дополнительные комментарии"
