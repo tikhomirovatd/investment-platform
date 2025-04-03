@@ -17,6 +17,7 @@ import { ru } from "date-fns/locale";
 
 // Импортируем список тем из SelectRequestTypeModal
 import { requestTopics } from "./SelectRequestTypeModal";
+type RequestTopic = typeof requestTopics[number];
 
 // Extend the insert schema with validation
 const requestFormSchema = z.object({
@@ -34,7 +35,7 @@ const requestFormSchema = z.object({
 type RequestFormValues = z.infer<typeof requestFormSchema>;
 
 interface CreateRequestFormProps {
-  topic: string;
+  topic: RequestTopic;
   onBack: () => void;
   onSuccess: () => void;
 }
@@ -92,7 +93,7 @@ export function CreateRequestForm({ topic, onBack, onSuccess }: CreateRequestFor
       
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-1">
-          <h2 className="text-2xl font-bold tracking-tight">{topic}</h2>
+          <h2 className="text-2xl font-bold tracking-tight">{topic === "Заявка на размещение" ? "Создание проекта" : topic}</h2>
           <Badge className="bg-[rgb(235,230,250)] text-purple-800 hover:bg-[rgb(235,230,250)]">Новый</Badge>
         </div>
         <p className="text-muted-foreground">{format(new Date(), "d MMMM yyyy в HH:mm", { locale: ru })}</p>
@@ -104,151 +105,319 @@ export function CreateRequestForm({ topic, onBack, onSuccess }: CreateRequestFor
           <input type="hidden" {...form.register("topic")} />
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Левый столбец */}
-            <div className="space-y-6">
-              {/* Пользователь */}
-              {topic === "Запрос доступа" ? (
-                <FormField
-                  control={form.control}
-                  name="userType"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Пользователь</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue="BUYER" disabled>
+            {/* Запрос доступа в две колонки */}
+            {topic === "Запрос доступа" ? (
+              <>
+                {/* Левый столбец */}
+                <div className="space-y-6">
+                  {/* Пользователь */}
+                  <FormField
+                    control={form.control}
+                    name="userType"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Пользователь</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue="BUYER" disabled>
+                          <FormControl>
+                            <SelectTrigger className="bg-gray-50">
+                              <SelectValue placeholder="Выберите тип пользователя" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="BUYER">Покупатель</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  {/* ФИО */}
+                  <FormField
+                    control={form.control}
+                    name="fullName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>ФИО</FormLabel>
                         <FormControl>
-                          <SelectTrigger className="bg-gray-50">
-                            <SelectValue placeholder="Выберите тип пользователя" />
-                          </SelectTrigger>
+                          <Input placeholder="Введите ФИО" {...field} />
                         </FormControl>
-                        <SelectContent>
-                          <SelectItem value="BUYER">Покупатель</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              ) : (
-                <FormField
-                  control={form.control}
-                  name="userType"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Пользователь</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  {/* Название организации */}
+                  <FormField
+                    control={form.control}
+                    name="organizationName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Название организации</FormLabel>
                         <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Выберите тип пользователя" />
-                          </SelectTrigger>
+                          <Input placeholder="Введите название организации" {...field} />
                         </FormControl>
-                        <SelectContent>
-                          <SelectItem value="SELLER">Продавец</SelectItem>
-                          <SelectItem value="BUYER">Покупатель</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-              
-              {/* ФИО */}
-              <FormField
-                control={form.control}
-                name="fullName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>ФИО</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Введите ФИО" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              {/* CNUM */}
-              <FormField
-                control={form.control}
-                name="cnum"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>CNUM</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Введите CNUM" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              {/* Название организации */}
-              <FormField
-                control={form.control}
-                name="organizationName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Название организации</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Введите название организации" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              {/* Комментарий */}
-              <FormField
-                control={form.control}
-                name="comments"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Комментарий (От пользователя)</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Введите дополнительные комментарии"
-                        {...field}
-                        rows={4}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            
-            {/* Правый столбец */}
-            <div className="space-y-6">
-              {/* Телефон */}
-              <FormField
-                control={form.control}
-                name="phone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Телефон</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Введите номер телефона" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              {/* Логин */}
-              <FormField
-                control={form.control}
-                name="login"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Логин</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Введите логин" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  {/* Телефон */}
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Телефон</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Введите номер телефона" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                
+                {/* Правый столбец */}
+                <div className="space-y-6">
+                  {/* CNUM */}
+                  <FormField
+                    control={form.control}
+                    name="cnum"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>CNUM</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Введите CNUM" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  {/* Логин */}
+                  <FormField
+                    control={form.control}
+                    name="login"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Логин</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Введите логин" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  {/* Комментарий */}
+                  <FormField
+                    control={form.control}
+                    name="comments"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Комментарий (От пользователя)</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Введите дополнительные комментарии"
+                            {...field}
+                            rows={4}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </>
+            ) : topic === "Заявка на размещение" ? (
+              <>
+                {/* Левый столбец */}
+                <div className="space-y-6">
+                  {/* Пользователь */}
+                  <FormField
+                    control={form.control}
+                    name="userType"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Пользователь</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Выберите тип пользователя" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="SELLER">Продавец</SelectItem>
+                            <SelectItem value="BUYER">Покупатель</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  {/* ФИО */}
+                  <FormField
+                    control={form.control}
+                    name="fullName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>ФИО</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Введите ФИО" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  {/* Название организации */}
+                  <FormField
+                    control={form.control}
+                    name="organizationName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Название организации</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Введите название организации" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  {/* Телефон */}
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Телефон</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Введите номер телефона" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                
+                {/* Правый столбец */}
+                <div className="space-y-6">
+                  {/* Комментарий */}
+                  <FormField
+                    control={form.control}
+                    name="comments"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Комментарий (От пользователя)</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Введите дополнительные комментарии"
+                            {...field}
+                            rows={10}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                {/* Вопросы по проекту - одна колонка */}
+                <div className="space-y-6 col-span-2">
+                  {/* Пользователь */}
+                  <FormField
+                    control={form.control}
+                    name="userType"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Пользователь</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Выберите тип пользователя" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="SELLER">Продавец</SelectItem>
+                            <SelectItem value="BUYER">Покупатель</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  {/* ФИО */}
+                  <FormField
+                    control={form.control}
+                    name="fullName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>ФИО</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Введите ФИО" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  {/* Телефон */}
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Телефон</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Введите номер телефона" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  {/* Название организации */}
+                  <FormField
+                    control={form.control}
+                    name="organizationName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Название организации</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Введите название организации" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  {/* Комментарий */}
+                  <FormField
+                    control={form.control}
+                    name="comments"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Комментарий (От пользователя)</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Введите дополнительные комментарии"
+                            {...field}
+                            rows={6}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </>
+            )}
           </div>
           
           <div className="flex justify-end space-x-4 mt-8">
@@ -264,7 +433,7 @@ export function CreateRequestForm({ topic, onBack, onSuccess }: CreateRequestFor
               disabled={createRequestMutation.isPending}
               className="bg-[#FEE600] hover:bg-[#FED800] text-black"
             >
-              {createRequestMutation.isPending ? "Отправка..." : "Создать запрос"}
+              {createRequestMutation.isPending ? "Отправка..." : topic === "Заявка на размещение" ? "Создать проект" : "Создать запрос"}
             </Button>
           </div>
         </form>

@@ -13,12 +13,15 @@ import {
 import { Button } from "@/components/ui/button";
 
 // Список тем для запросов
-export const requestTopics = ["Заявка на размещение", "Запрос доступа", "Вопросы по проекту"] as const;
+const REQUEST_TOPICS = ["Заявка на размещение", "Запрос доступа", "Вопросы по проекту"] as const;
+export { REQUEST_TOPICS as requestTopics };
+
+type RequestTopic = typeof REQUEST_TOPICS[number];
 
 interface SelectRequestTypeModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelect: (topic: string) => void;
+  onSelect: (topic: RequestTopic) => void;
 }
 
 export function SelectRequestTypeModal({ isOpen, onClose, onSelect }: SelectRequestTypeModalProps) {
@@ -29,14 +32,14 @@ export function SelectRequestTypeModal({ isOpen, onClose, onSelect }: SelectRequ
           <DialogTitle>Выберите тип запроса</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          {requestTopics.map((topic) => (
+          {REQUEST_TOPICS.map((topic) => (
             <Card 
               key={topic} 
               className="cursor-pointer hover:bg-gray-50 transition-colors"
               onClick={() => onSelect(topic)}
             >
               <CardContent className="p-4">
-                <div className="font-medium">{topic}</div>
+                <div className="font-medium">{topic === "Заявка на размещение" ? "Создание проекта" : topic}</div>
               </CardContent>
             </Card>
           ))}

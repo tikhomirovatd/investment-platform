@@ -10,14 +10,15 @@ import { FilterModal } from "@/components/FilterModal";
 import { ActiveFilters } from "@/components/ActiveFilters";
 import { Pagination } from "@/components/Pagination";
 import { Badge } from "@/components/ui/badge";
-import { SelectRequestTypeModal } from "@/components/SelectRequestTypeModal";
+import { SelectRequestTypeModal, requestTopics } from "@/components/SelectRequestTypeModal";
+type RequestTopic = typeof requestTopics[number];
 import { format, isAfter, isBefore, parseISO } from "date-fns";
 import { ru } from "date-fns/locale";
 
 export default function Requests() {
   const [isCreateFormVisible, setIsCreateFormVisible] = useState(false);
   const [isSelectTypeModalOpen, setIsSelectTypeModalOpen] = useState(false);
-  const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
+  const [selectedTopic, setSelectedTopic] = useState<RequestTopic | null>(null);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [filter, setFilter] = useState<RequestFilter & {
     phone?: string;
@@ -278,7 +279,7 @@ export default function Requests() {
       
       {isCreateFormVisible && selectedTopic ? (
         <CreateRequestForm
-          topic={selectedTopic}
+          topic={selectedTopic as RequestTopic}
           onBack={() => {
             setIsCreateFormVisible(false);
             setSelectedTopic(null);
