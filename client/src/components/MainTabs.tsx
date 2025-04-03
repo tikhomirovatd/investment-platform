@@ -23,12 +23,12 @@ export function MainTabs({ onCreateClick }: MainTabsProps) {
       </div>
 
       <div className="mt-4">
-        <nav className="flex border-b border-gray-200">
+        <nav className="flex border-b border-[rgb(43,45,51)]">
           <Link href="/">
             <a className={`px-4 py-2 text-sm font-medium ${
               location === "/requests" || location === "/"
                 ? "text-[#3498DB] border-b-2 border-[#3498DB]"
-                : "text-gray-500 hover:text-[#2C3E50] hover:border-[#2C3E50]"
+                : "text-[rgb(43,45,51)] hover:text-[#3498DB] hover:border-[rgb(43,45,51)]"
             }`}>
               Запросы
             </a>
@@ -37,7 +37,7 @@ export function MainTabs({ onCreateClick }: MainTabsProps) {
             <a className={`px-4 py-2 text-sm font-medium ${
               location === "/users"
                 ? "text-[#3498DB] border-b-2 border-[#3498DB]"
-                : "text-gray-500 hover:text-[#2C3E50] hover:border-[#2C3E50]"
+                : "text-[rgb(43,45,51)] hover:text-[#3498DB] hover:border-[rgb(43,45,51)]"
             }`}>
               Пользователи
             </a>
@@ -46,7 +46,7 @@ export function MainTabs({ onCreateClick }: MainTabsProps) {
             <a className={`px-4 py-2 text-sm font-medium ${
               location === "/projects"
                 ? "text-[#3498DB] border-b-2 border-[#3498DB]"
-                : "text-gray-500 hover:text-[#2C3E50] hover:border-[#2C3E50]"
+                : "text-[rgb(43,45,51)] hover:text-[#3498DB] hover:border-[rgb(43,45,51)]"
             }`}>
               Проекты
             </a>
