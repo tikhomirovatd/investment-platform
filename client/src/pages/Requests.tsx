@@ -10,11 +10,14 @@ import { FilterModal } from "@/components/FilterModal";
 import { ActiveFilters } from "@/components/ActiveFilters";
 import { Pagination } from "@/components/Pagination";
 import { Badge } from "@/components/ui/badge";
+import { SelectRequestTypeModal } from "@/components/SelectRequestTypeModal";
 import { format, isAfter, isBefore, parseISO } from "date-fns";
 import { ru } from "date-fns/locale";
 
 export default function Requests() {
   const [isCreateFormVisible, setIsCreateFormVisible] = useState(false);
+  const [isSelectTypeModalOpen, setIsSelectTypeModalOpen] = useState(false);
+  const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [filter, setFilter] = useState<RequestFilter & {
     phone?: string;
@@ -271,11 +274,15 @@ export default function Requests() {
 
   return (
     <div>
-      {!isCreateFormVisible && <MainTabs onCreateClick={() => setIsCreateFormVisible(true)} />}
+      {!isCreateFormVisible && <MainTabs onCreateClick={() => setIsSelectTypeModalOpen(true)} />}
       
-      {isCreateFormVisible ? (
+      {isCreateFormVisible && selectedTopic ? (
         <CreateRequestForm
-          onBack={() => setIsCreateFormVisible(false)}
+          topic={selectedTopic}
+          onBack={() => {
+            setIsCreateFormVisible(false);
+            setSelectedTopic(null);
+          }}
           onSuccess={() => {
             addNotification({ 
               type: "success", 
@@ -362,6 +369,16 @@ export default function Requests() {
         ]}
         statusFilterLabel="Статус"
         statusFieldName="status"
+      />
+
+      <SelectRequestTypeModal 
+        isOpen={isSelectTypeModalOpen}
+        onClose={() => setIsSelectTypeModalOpen(false)}
+        onSelect={(topic) => {
+          setSelectedTopic(topic);
+          setIsSelectTypeModalOpen(false);
+          setIsCreateFormVisible(true);
+        }}
       />
     </div>
   );

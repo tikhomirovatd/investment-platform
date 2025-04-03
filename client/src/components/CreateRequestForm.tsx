@@ -10,10 +10,11 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Badge } from "@/components/ui/badge";
 import { ChevronLeft } from "lucide-react";
 
-// Enum of allowed request topics
-const requestTopics = ["Заявка на размещение", "Доступ к платформе", "Вопросы по проекту"] as const;
+// Импортируем список тем из SelectRequestTypeModal
+import { requestTopics } from "./SelectRequestTypeModal";
 
 // Extend the insert schema with validation
 const requestFormSchema = z.object({
@@ -28,17 +29,18 @@ const requestFormSchema = z.object({
 type RequestFormValues = z.infer<typeof requestFormSchema>;
 
 interface CreateRequestFormProps {
+  topic: string;
   onBack: () => void;
   onSuccess: () => void;
 }
 
-export function CreateRequestForm({ onBack, onSuccess }: CreateRequestFormProps) {
+export function CreateRequestForm({ topic, onBack, onSuccess }: CreateRequestFormProps) {
   // Initialize the form with react-hook-form
   const form = useForm<RequestFormValues>({
     resolver: zodResolver(requestFormSchema),
     defaultValues: {
       userType: "BUYER",
-      topic: requestTopics[0],
+      topic: topic,
       fullName: "",
       phone: "",
       comments: "",
@@ -81,7 +83,10 @@ export function CreateRequestForm({ onBack, onSuccess }: CreateRequestFormProps)
       </Button>
       
       <div className="mb-6">
-        <h2 className="text-2xl font-bold tracking-tight">Создать новый запрос</h2>
+        <div className="flex items-center gap-3 mb-1">
+          <h2 className="text-2xl font-bold tracking-tight">{topic}</h2>
+          <Badge className="bg-[rgb(235,230,250)] text-purple-800 hover:bg-[rgb(235,230,250)]">Новый</Badge>
+        </div>
         <p className="text-muted-foreground">Заполните форму для создания нового запроса</p>
       </div>
       
@@ -109,30 +114,8 @@ export function CreateRequestForm({ onBack, onSuccess }: CreateRequestFormProps)
             )}
           />
           
-          <FormField
-            control={form.control}
-            name="topic"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Тема запроса</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Выберите тему запроса" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {requestTopics.map((topic) => (
-                      <SelectItem key={topic} value={topic}>
-                        {topic}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {/* Скрыто, так как тема уже выбрана */}
+          <input type="hidden" {...form.register("topic")} />
           
           <FormField
             control={form.control}
