@@ -25,6 +25,7 @@ export default function Projects() {
     dealType: undefined,
     industry: undefined,
   });
+  const [sortOrder, setSortOrder] = useState<string>("newest");
 
   const { addNotification } = useNotification();
 
@@ -49,7 +50,20 @@ export default function Projects() {
         filteredData = filteredData.filter(p => p.industry === filter.industry);
       }
       
-      return filteredData;
+      // Сортировка данных
+      const sortedData = [...filteredData];
+      
+      if (sortOrder === "newest") {
+        sortedData.sort((a, b) => 
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+      } else if (sortOrder === "oldest") {
+        sortedData.sort((a, b) => 
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        );
+      }
+      
+      return sortedData;
     }
   });
 
@@ -187,7 +201,10 @@ export default function Projects() {
 
         <FilterBar 
           onSearchChange={handleSearch}
-          onSortChange={(value) => console.log("Sort by:", value)}
+          onSortChange={(value) => {
+            setSortOrder(value);
+            queryClient.invalidateQueries({ queryKey: ['/api/projects'] });
+          }}
           onFilterClick={() => setIsFilterModalOpen(true)}
           onTypeFilterChange={handleDealTypeFilterChange}
           typeFilterOptions={[
