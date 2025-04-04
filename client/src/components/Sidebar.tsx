@@ -15,7 +15,7 @@ export function Sidebar() {
   ];
 
   return (
-    <div className="w-64 flex-shrink-0 bg-white border-r border-gray-200">
+    <aside className="w-64 flex-shrink-0 bg-white border-r border-gray-200 h-screen fixed">
       <div className="p-4 border-b border-gray-200">
         <div className="flex items-center">
           <div className="h-8 w-8 bg-yellow-400 flex items-center justify-center rounded mr-2">
@@ -43,6 +43,6 @@ export function Sidebar() {
           ))}
         </ul>
       </nav>
-    </div>
+    </aside>
   );
 }

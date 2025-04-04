@@ -471,7 +471,7 @@ export function CreateProjectForm({ onBack, onSuccess }: CreateProjectFormProps)
           </div>
           
           {/* Кнопки действий, зафиксированные внизу */}
-          <div className="fixed bottom-0 left-[240px] right-0 bg-white border-t p-4 flex justify-start space-x-4 z-10">
+          <div className="fixed bottom-0 left-64 right-0 bg-white border-t p-4 flex justify-start space-x-4 z-10">
             <Button 
               variant="outline" 
               type="button" 

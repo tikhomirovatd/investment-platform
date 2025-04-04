@@ -21,12 +21,12 @@ export function MainLayout({ children }: MainLayoutProps) {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="min-h-screen bg-white">
       {/* Sidebar */}
       <Sidebar />
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="ml-64 flex flex-col min-h-screen">
         {/* Header */}
         <Header />
 
@@ -44,7 +44,7 @@ export function MainLayout({ children }: MainLayoutProps) {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-auto p-6">
+        <div className="flex-1 overflow-auto">
           {children}
         </div>
       </div>
