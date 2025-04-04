@@ -502,8 +502,8 @@ export function CreateProjectForm({ onBack, onSuccess }: CreateProjectFormProps)
             </Button>
           </div>
           
-          {/* Отступ внизу, чтобы компенсировать фиксированную панель кнопок */}
-          <div className="h-20"></div>
+          {/* Минимальный отступ внизу */}
+          <div className="h-4"></div>
         </form>
       </Form>
     </div>
