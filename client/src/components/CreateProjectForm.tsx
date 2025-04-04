@@ -106,7 +106,7 @@ export function CreateProjectForm({ onBack, onSuccess }: CreateProjectFormProps)
   };
 
   return (
-    <div className="mt-8 px-6">
+    <div className="mt-8 px-6 pb-20"> {/* Added pb-20 for padding-bottom */}
       <Button 
         variant="ghost" 
         onClick={onBack}
@@ -125,7 +125,7 @@ export function CreateProjectForm({ onBack, onSuccess }: CreateProjectFormProps)
       </div>
       
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="max-w-6xl">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="max-w-6xl mb-20"> {/* Added mb-20 margin-bottom */}
           {/* 1. Способ связи */}
           <div className="bg-gray-50 rounded-lg p-6 mb-6">
             <h3 className="text-lg font-semibold mb-6">Способ связи</h3>
@@ -502,8 +502,7 @@ export function CreateProjectForm({ onBack, onSuccess }: CreateProjectFormProps)
             </Button>
           </div>
           
-          {/* Минимальный отступ внизу */}
-          <div className="h-4"></div>
+          {/* Убран отступ внизу */}
         </form>
       </Form>
     </div>
