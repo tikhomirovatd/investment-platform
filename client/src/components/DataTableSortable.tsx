@@ -246,24 +246,7 @@ export function DataTable<T>({
                 {(onEdit || onDelete) && (
                   <TableCell className="px-3 py-3 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex justify-end">
-                      {onEdit && (
-                        <Button 
-                          variant="ghost" 
-                          onClick={() => onEdit(row)}
-                          className="text-[#3498DB] hover:text-[#2980b9] text-xs font-medium mr-2"
-                        >
-                          Редактировать
-                        </Button>
-                      )}
-                      {onDelete && (
-                        <Button 
-                          variant="ghost" 
-                          onClick={() => onDelete(row)}
-                          className="text-gray-600 hover:text-gray-800 text-xs font-medium"
-                        >
-                          Удалить
-                        </Button>
-                      )}
+                      {/* Действия будут доступны через контекстное меню или выделение строк */}
                     </div>
                   </TableCell>
                 )}
