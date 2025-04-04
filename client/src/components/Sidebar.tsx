@@ -4,15 +4,23 @@ export function Sidebar() {
   const [location] = useLocation();
 
   const menuItems = [
-    { path: "/rbp", label: "RBP", active: false },
-    { path: "/news", label: "Новости", active: false },
-    { path: "/nps", label: "NPS", active: false },
-    { path: "/reports", label: "Отчеты", active: false },
-    { path: "/compliance", label: "Compliance", active: false },
-    { path: "/factoring", label: "Факторинг", active: false },
-    { path: "/trade-finance", label: "Торговое финансирование", active: false },
-    { path: "/", label: "M&A Платформа", active: true },
+    { path: "/rbp", label: "RBP" },
+    { path: "/news", label: "Новости" },
+    { path: "/nps", label: "NPS" },
+    { path: "/reports", label: "Отчеты" },
+    { path: "/compliance", label: "Compliance" },
+    { path: "/factoring", label: "Факторинг" },
+    { path: "/trade-finance", label: "Торговое финансирование" },
+    { path: "/requests", label: "M&A Платформа" },
   ];
+
+  // Определяем, является ли пункт меню активным
+  const isItemActive = (path: string) => {
+    if (path === "/requests") {
+      return ["/", "/requests", "/users", "/projects"].some(p => location.startsWith(p));
+    }
+    return location === path;
+  };
 
   return (
     <aside className="w-64 flex-shrink-0 bg-white border-r border-gray-200 h-screen fixed">
@@ -34,7 +42,7 @@ export function Sidebar() {
             <li key={item.path}>
               <Link href={item.path}>
                 <a className={`flex items-center px-4 py-3 text-sm hover:bg-gray-100 ${
-                  (location === item.path) || item.active ? "bg-gray-100 font-medium" : ""
+                  isItemActive(item.path) ? "bg-gray-100 font-medium" : ""
                 }`}>
                   <span>{item.label}</span>
                 </a>

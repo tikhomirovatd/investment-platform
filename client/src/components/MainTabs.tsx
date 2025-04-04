@@ -24,7 +24,7 @@ export function MainTabs({ onCreateClick }: MainTabsProps) {
 
       <div className="mt-4">
         <nav className="flex">
-          <Link href="/">
+          <Link href="/requests">
             <a className={`px-4 py-2 text-sm font-medium ${
               location === "/requests" || location === "/"
                 ? "text-[rgb(43,45,51)] border-b-2 border-[rgb(43,45,51)]"
