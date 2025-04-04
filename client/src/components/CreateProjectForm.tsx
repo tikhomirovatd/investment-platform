@@ -270,20 +270,47 @@ export function CreateProjectForm({ onBack, onSuccess }: CreateProjectFormProps)
                   )}
                 />
                 
-                {/* EBITDA */}
-                <FormField
-                  control={form.control}
-                  name="ebitda"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>EBITDA</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Введите EBITDA" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                {/* EBITDA с переключателем Скрыть до NDA */}
+                <div className="space-y-2">
+                  <FormField
+                    control={form.control}
+                    name="ebitda"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>EBITDA</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Введите EBITDA" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  {/* Скрыть до NDA */}
+                  <FormField
+                    control={form.control}
+                    name="hideUntilNda"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between space-y-0 mt-1">
+                        <div className="space-y-0">
+                          <FormLabel className="text-sm">Скрыть до NDA</FormLabel>
+                          {field.value && (
+                            <FormDescription className="text-xs">
+                              Информация будет скрыта до подписания NDA
+                            </FormDescription>
+                          )}
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            className="bg-gray-200 data-[state=checked]:bg-[#FEE600]"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
                 
                 {/* Стоимость объекта */}
                 <FormField
@@ -378,31 +405,6 @@ export function CreateProjectForm({ onBack, onSuccess }: CreateProjectFormProps)
                         <Input placeholder="Введите процент продажи" {...field} />
                       </FormControl>
                       <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                {/* Скрыть до NDA */}
-                <FormField
-                  control={form.control}
-                  name="hideUntilNda"
-                  render={({ field }) => (
-                    <FormItem className="mt-4 flex flex-row items-center justify-between space-y-0 p-4">
-                      <div className="space-y-1">
-                        <FormLabel>Скрыть до NDA</FormLabel>
-                        {field.value && (
-                          <FormDescription className="text-xs">
-                            Информация будет скрыта до подписания NDA
-                          </FormDescription>
-                        )}
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                          className="bg-gray-200 data-[state=checked]:bg-[#FEE600]"
-                        />
-                      </FormControl>
                     </FormItem>
                   )}
                 />
