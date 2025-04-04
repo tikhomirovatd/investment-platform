@@ -38,6 +38,8 @@ const projectFormSchema = z.object({
   salePercent: z.string().optional(),
   website: z.string().optional(),
   hideUntilNda: z.boolean().default(false),
+  hideRevenueUntilNda: z.boolean().default(false),
+  hidePriceUntilNda: z.boolean().default(false),
   comments: z.string().optional(),
   isVisible: z.boolean().default(true),
   isCompleted: z.boolean().default(false),
@@ -71,6 +73,8 @@ export function CreateProjectForm({ onBack, onSuccess }: CreateProjectFormProps)
       salePercent: "",
       website: "",
       hideUntilNda: false,
+      hideRevenueUntilNda: false,
+      hidePriceUntilNda: false,
       comments: "",
       isVisible: true,
       isCompleted: false,
@@ -255,20 +259,47 @@ export function CreateProjectForm({ onBack, onSuccess }: CreateProjectFormProps)
                   )}
                 />
                 
-                {/* Выручка */}
-                <FormField
-                  control={form.control}
-                  name="revenue"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Выручка</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Введите выручку" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                {/* Выручка с переключателем Скрыть до NDA */}
+                <div className="space-y-2">
+                  <FormField
+                    control={form.control}
+                    name="revenue"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Выручка</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Введите выручку" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  {/* Скрыть до NDA для выручки */}
+                  <FormField
+                    control={form.control}
+                    name="hideRevenueUntilNda"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between space-y-0 mt-1">
+                        <div className="space-y-0">
+                          <FormLabel className="text-sm">Скрыть до NDA</FormLabel>
+                          {field.value && (
+                            <FormDescription className="text-xs">
+                              Информация будет скрыта до подписания NDA
+                            </FormDescription>
+                          )}
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            className="bg-gray-200 data-[state=checked]:bg-[#FEE600]"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
                 
                 {/* EBITDA с переключателем Скрыть до NDA */}
                 <div className="space-y-2">
@@ -312,20 +343,47 @@ export function CreateProjectForm({ onBack, onSuccess }: CreateProjectFormProps)
                   />
                 </div>
                 
-                {/* Стоимость объекта */}
-                <FormField
-                  control={form.control}
-                  name="price"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Стоимость объекта</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Введите стоимость объекта" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                {/* Стоимость объекта с переключателем Скрыть до NDA */}
+                <div className="space-y-2">
+                  <FormField
+                    control={form.control}
+                    name="price"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Стоимость объекта</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Введите стоимость объекта" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  {/* Скрыть до NDA для стоимости */}
+                  <FormField
+                    control={form.control}
+                    name="hidePriceUntilNda"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between space-y-0 mt-1">
+                        <div className="space-y-0">
+                          <FormLabel className="text-sm">Скрыть до NDA</FormLabel>
+                          {field.value && (
+                            <FormDescription className="text-xs">
+                              Информация будет скрыта до подписания NDA
+                            </FormDescription>
+                          )}
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            className="bg-gray-200 data-[state=checked]:bg-[#FEE600]"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
                 
                 {/* Сайт компании */}
                 <FormField
