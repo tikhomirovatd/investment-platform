@@ -5,22 +5,75 @@
  */
 
 import type { Request, Response, NextFunction } from 'express';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { storage, IStorage } from './storage';
 import { User, Project, Request as RequestModel, InsertUser, InsertProject, InsertRequest } from '@shared/schema';
 
 // Конфигурация для Kotlin-сервера
-const KOTLIN_SERVER_URL = process.env.KOTLIN_SERVER_URL || 'http://localhost:5000/api';
-const USE_KOTLIN_SERVER = process.env.USE_KOTLIN_SERVER === 'true';
+const KOTLIN_SERVER_URL = process.env.KOTLIN_SERVER_URL || 'http://localhost:8080/api';
+let USE_KOTLIN_SERVER = process.env.USE_KOTLIN_SERVER === 'true';
+
+// Статус работоспособности серверов
+const serverStatus = {
+  kotlin: false,
+  lastCheck: 0
+};
+
+/**
+ * Включает или выключает использование Kotlin-сервера
+ * @param enabled true для использования Kotlin-сервера, false для JS-сервера
+ */
+export function toggleKotlinServerUsage(enabled: boolean): void {
+  USE_KOTLIN_SERVER = enabled;
+  // Сбрасываем кэш проверки при переключении режимов
+  serverStatus.lastCheck = 0;
+}
+
+/**
+ * Возвращает текущую настройку использования Kotlin-сервера
+ */
+export function isKotlinServerEnabled(): boolean {
+  return USE_KOTLIN_SERVER;
+}
+
+/**
+ * Проверяет доступность Kotlin-сервера и возвращает его статус
+ * @returns true если Kotlin-сервер доступен, false в противном случае
+ */
+export async function checkKotlinServerAvailability(): Promise<boolean> {
+  // Проверяем не чаще чем раз в 30 секунд
+  const now = Date.now();
+  if (now - serverStatus.lastCheck < 30000) {
+    return serverStatus.kotlin;
+  }
+
+  try {
+    await axios.get(`${KOTLIN_SERVER_URL}/health`, { timeout: 2000 });
+    serverStatus.kotlin = true;
+  } catch (error) {
+    serverStatus.kotlin = false;
+    console.warn('Kotlin server is not available. Using JS implementation instead.');
+  }
+  
+  serverStatus.lastCheck = now;
+  return serverStatus.kotlin;
+}
 
 // Типы сервера для маршрутизации запросов
 type ServerType = 'js' | 'kotlin';
 
 /**
  * Определяет, какую реализацию сервера использовать
+ * Учитывает как настройки, так и доступность сервера Kotlin
  */
-function getServerType(): ServerType {
-  return USE_KOTLIN_SERVER ? 'kotlin' : 'js';
+async function getServerType(): Promise<ServerType> {
+  if (!USE_KOTLIN_SERVER) {
+    return 'js';
+  }
+  
+  // Проверяем доступность Kotlin-сервера
+  const isKotlinAvailable = await checkKotlinServerAvailability();
+  return isKotlinAvailable ? 'kotlin' : 'js';
 }
 
 /**
@@ -167,10 +220,28 @@ const kotlinStorage = new KotlinStorageAdapter();
 
 /**
  * Получает соответствующую реализацию хранилища данных
+ * В случае использования среды с переключением не гарантирует,
+ * что то же самое хранилище будет использоваться для всех запросов,
+ * т.к. статус сервера может меняться
+ */
+export async function getStorageAsync(): Promise<IStorage> {
+  const serverType = await getServerType();
+  return serverType === 'kotlin' ? kotlinStorage : storage;
+}
+
+/**
+ * Получает соответствующую реализацию хранилища данных
+ * Для обратной совместимости всегда использует JS-реализацию
+ * если полная проверка доступности не была выполнена
  */
 export function getStorage(): IStorage {
-  const serverType = getServerType();
-  return serverType === 'kotlin' ? kotlinStorage : storage;
+  // Если сервер точно был проверен и доступен, используем его
+  if (USE_KOTLIN_SERVER && serverStatus.kotlin) {
+    return kotlinStorage;
+  }
+  
+  // В противном случае, используем JS реализацию
+  return storage;
 }
 
 /**
@@ -186,65 +257,97 @@ export function kotlinIntegrationErrorHandler(err: any, req: Request, res: Respo
 /**
  * Создаст промежуточный объект, реализующий IStorage, который будет
  * перенаправлять запросы либо в JavaScript, либо в Kotlin-реализацию
+ * 
+ * При использовании с USE_KOTLIN_SERVER=true будет проверять доступность
+ * Kotlin-сервера перед каждым запросом и переключаться на JS-реализацию,
+ * если Kotlin-сервер недоступен
  */
 export class StorageProxy implements IStorage {
+  /**
+   * Получает актуальную реализацию хранилища данных
+   * В "динамическом" режиме (USE_KOTLIN_SERVER=true) проверяет доступность
+   * Kotlin-сервера перед каждым запросом
+   */
+  private async getAsyncImpl(): Promise<IStorage> {
+    if (USE_KOTLIN_SERVER) {
+      return await getStorageAsync();
+    }
+    return storage;
+  }
+  
+  /**
+   * Синхронная версия для обратной совместимости
+   */
   private getImpl(): IStorage {
     return getStorage();
   }
 
   // Пользователи
   async getUsers(): Promise<User[]> {
-    return this.getImpl().getUsers();
+    const impl = await this.getAsyncImpl();
+    return impl.getUsers();
   }
 
   async getUser(id: number): Promise<User | undefined> {
-    return this.getImpl().getUser(id);
+    const impl = await this.getAsyncImpl();
+    return impl.getUser(id);
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return this.getImpl().getUserByUsername(username);
+    const impl = await this.getAsyncImpl();
+    return impl.getUserByUsername(username);
   }
 
   async createUser(user: InsertUser): Promise<User> {
-    return this.getImpl().createUser(user);
+    const impl = await this.getAsyncImpl();
+    return impl.createUser(user);
   }
 
   // Проекты
   async getProjects(filters?: { isCompleted?: boolean }): Promise<Project[]> {
-    return this.getImpl().getProjects(filters);
+    const impl = await this.getAsyncImpl();
+    return impl.getProjects(filters);
   }
 
   async getProject(id: number): Promise<Project | undefined> {
-    return this.getImpl().getProject(id);
+    const impl = await this.getAsyncImpl();
+    return impl.getProject(id);
   }
 
   async createProject(project: InsertProject): Promise<Project> {
-    return this.getImpl().createProject(project);
+    const impl = await this.getAsyncImpl();
+    return impl.createProject(project);
   }
 
   async updateProject(id: number, data: Partial<Project>): Promise<Project | undefined> {
-    return this.getImpl().updateProject(id, data);
+    const impl = await this.getAsyncImpl();
+    return impl.updateProject(id, data);
   }
 
   async deleteProject(id: number): Promise<boolean> {
-    return this.getImpl().deleteProject(id);
+    const impl = await this.getAsyncImpl();
+    return impl.deleteProject(id);
   }
 
   // Запросы
   async getRequests(): Promise<RequestModel[]> {
-    return this.getImpl().getRequests();
+    const impl = await this.getAsyncImpl();
+    return impl.getRequests();
   }
 
   async getRequest(id: number): Promise<RequestModel | undefined> {
-    return this.getImpl().getRequest(id);
+    const impl = await this.getAsyncImpl();
+    return impl.getRequest(id);
   }
 
   async createRequest(request: InsertRequest): Promise<RequestModel> {
-    return this.getImpl().createRequest(request);
+    const impl = await this.getAsyncImpl();
+    return impl.createRequest(request);
   }
 
   async updateRequest(id: number, data: Partial<RequestModel>): Promise<RequestModel | undefined> {
-    return this.getImpl().updateRequest(id, data);
+    const impl = await this.getAsyncImpl();
+    return impl.updateRequest(id, data);
   }
 }
 

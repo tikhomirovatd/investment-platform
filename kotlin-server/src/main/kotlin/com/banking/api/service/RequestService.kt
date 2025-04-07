@@ -1,8 +1,8 @@
 package com.banking.api.service
 
-import com.banking.api.dto.CreateRequestRequest
-import com.banking.api.dto.RequestResponse
-import com.banking.api.dto.UpdateRequestRequest
+import com.banking.api.dto.CreateRequestDto
+import com.banking.api.dto.RequestResponseDto
+import com.banking.api.dto.UpdateRequestDto
 import com.banking.api.exception.ResourceNotFoundException
 import com.banking.api.model.Request
 import com.banking.api.model.RequestStatus
@@ -10,129 +10,121 @@ import com.banking.api.model.UserType
 import com.banking.api.repository.RequestRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 
-/**
- * Сервис для работы с заявками
- */
 @Service
 class RequestService(private val requestRepository: RequestRepository) {
 
-    /**
-     * Получить все заявки
-     */
-    fun getAllRequests(): List<RequestResponse> {
-        return requestRepository.findAll().map { RequestResponse.fromEntity(it) }
+    fun getAllRequests(): List<RequestResponseDto> {
+        return requestRepository.findAll().map { RequestResponseDto.fromEntity(it) }
     }
 
-    /**
-     * Получить заявку по ID
-     */
-    fun getRequestById(id: Long): RequestResponse {
+    fun getRequestById(id: Long): RequestResponseDto {
         val request = requestRepository.findById(id)
-            .orElseThrow { ResourceNotFoundException("Заявка с ID $id не найдена") }
-        return RequestResponse.fromEntity(request)
+            .orElseThrow { ResourceNotFoundException("Request not found with id: $id") }
+        return RequestResponseDto.fromEntity(request)
     }
 
-    /**
-     * Фильтрация заявок
-     */
-    fun filterRequests(search: String?, userType: UserType?, status: RequestStatus?): List<RequestResponse> {
-        val requests = when {
-            !search.isNullOrBlank() && userType != null && status != null -> {
-                requestRepository.findAll().filter {
-                    it.userType == userType && 
-                    it.status == status &&
-                    (it.fullName.contains(search, ignoreCase = true) ||
-                    it.organizationName?.contains(search, ignoreCase = true) == true ||
-                    it.topic.contains(search, ignoreCase = true) ||
-                    it.comments?.contains(search, ignoreCase = true) == true)
-                }
-            }
-            !search.isNullOrBlank() && userType != null -> {
-                requestRepository.findAll().filter {
-                    it.userType == userType &&
-                    (it.fullName.contains(search, ignoreCase = true) ||
-                    it.organizationName?.contains(search, ignoreCase = true) == true ||
-                    it.topic.contains(search, ignoreCase = true) ||
-                    it.comments?.contains(search, ignoreCase = true) == true)
-                }
-            }
-            !search.isNullOrBlank() && status != null -> {
-                requestRepository.findAll().filter {
-                    it.status == status &&
-                    (it.fullName.contains(search, ignoreCase = true) ||
-                    it.organizationName?.contains(search, ignoreCase = true) == true ||
-                    it.topic.contains(search, ignoreCase = true) ||
-                    it.comments?.contains(search, ignoreCase = true) == true)
-                }
-            }
-            userType != null && status != null -> {
-                requestRepository.findAll().filter {
-                    it.userType == userType && it.status == status
-                }
-            }
-            !search.isNullOrBlank() -> {
-                requestRepository.findAll().filter {
-                    it.fullName.contains(search, ignoreCase = true) ||
-                    it.organizationName?.contains(search, ignoreCase = true) == true ||
-                    it.topic.contains(search, ignoreCase = true) ||
-                    it.comments?.contains(search, ignoreCase = true) == true
-                }
-            }
-            userType != null -> {
-                requestRepository.findByUserType(userType)
-            }
-            status != null -> {
-                requestRepository.findByStatus(status)
-            }
-            else -> {
-                requestRepository.findAll()
-            }
-        }
-        
-        return requests.map { RequestResponse.fromEntity(it) }
+    fun getRequestsByStatus(status: RequestStatus): List<RequestResponseDto> {
+        return requestRepository.findByStatus(status)
+            .map { RequestResponseDto.fromEntity(it) }
     }
 
-    /**
-     * Создать новую заявку
-     */
+    fun getRequestsByUserType(userType: UserType): List<RequestResponseDto> {
+        return requestRepository.findByUserType(userType)
+            .map { RequestResponseDto.fromEntity(it) }
+    }
+
+    fun getRequestsByTopic(topic: String): List<RequestResponseDto> {
+        return requestRepository.findByTopic(topic)
+            .map { RequestResponseDto.fromEntity(it) }
+    }
+
     @Transactional
-    fun createRequest(requestRequest: CreateRequestRequest): RequestResponse {
+    fun createRequest(createRequestDto: CreateRequestDto): RequestResponseDto {
         val request = Request(
-            userType = requestRequest.userType,
-            topic = requestRequest.topic,
-            fullName = requestRequest.fullName,
-            organizationName = requestRequest.organizationName,
-            cnum = requestRequest.cnum,
-            login = requestRequest.login,
-            phone = requestRequest.phone,
-            comments = requestRequest.comments
+            userType = createRequestDto.userType,
+            topic = createRequestDto.topic,
+            createdAt = LocalDateTime.now(),
+            status = RequestStatus.NEW,
+            fullName = createRequestDto.fullName,
+            organizationName = createRequestDto.organizationName,
+            cnum = createRequestDto.cnum,
+            login = createRequestDto.login,
+            phone = createRequestDto.phone,
+            comments = createRequestDto.comments
         )
-        
+
         val savedRequest = requestRepository.save(request)
-        return RequestResponse.fromEntity(savedRequest)
+        return RequestResponseDto.fromEntity(savedRequest)
     }
 
-    /**
-     * Обновить заявку
-     */
     @Transactional
-    fun updateRequest(id: Long, updateRequest: UpdateRequestRequest): RequestResponse {
+    fun updateRequest(id: Long, updateRequestDto: UpdateRequestDto): RequestResponseDto {
         val existingRequest = requestRepository.findById(id)
-            .orElseThrow { ResourceNotFoundException("Заявка с ID $id не найдена") }
-        
-        // Создаем копию объекта с обновленными полями
+            .orElseThrow { ResourceNotFoundException("Request not found with id: $id") }
+
         val updatedRequest = existingRequest.copy(
-            status = updateRequest.status ?: existingRequest.status,
-            fullName = updateRequest.fullName ?: existingRequest.fullName,
-            organizationName = updateRequest.organizationName ?: existingRequest.organizationName,
-            cnum = updateRequest.cnum ?: existingRequest.cnum,
-            login = updateRequest.login ?: existingRequest.login,
-            phone = updateRequest.phone ?: existingRequest.phone,
-            comments = updateRequest.comments ?: existingRequest.comments
+            status = updateRequestDto.status ?: existingRequest.status,
+            fullName = updateRequestDto.fullName ?: existingRequest.fullName,
+            organizationName = updateRequestDto.organizationName ?: existingRequest.organizationName,
+            cnum = updateRequestDto.cnum ?: existingRequest.cnum,
+            login = updateRequestDto.login ?: existingRequest.login,
+            phone = updateRequestDto.phone ?: existingRequest.phone,
+            comments = updateRequestDto.comments ?: existingRequest.comments
         )
-        
+
         val savedRequest = requestRepository.save(updatedRequest)
-        return RequestResponse.fromEntity(savedRequest)
+        return RequestResponseDto.fromEntity(savedRequest)
+    }
+
+    @Transactional
+    fun deleteRequest(id: Long) {
+        if (!requestRepository.existsById(id)) {
+            throw ResourceNotFoundException("Request not found with id: $id")
+        }
+        requestRepository.deleteById(id)
+    }
+
+    fun searchRequests(search: String?, userType: UserType?, status: RequestStatus?): List<RequestResponseDto> {
+        // Если параметры поиска не указаны, возвращаем все запросы
+        if (search.isNullOrBlank() && userType == null && status == null) {
+            return getAllRequests()
+        }
+
+        var results = listOf<Request>()
+
+        // Поиск по указанным параметрам
+        if (!search.isNullOrBlank()) {
+            val byFullName = requestRepository.findByFullNameContainingIgnoreCase(search)
+            val byOrganization = requestRepository.findByOrganizationNameContainingIgnoreCase(search)
+            
+            // Объединяем результаты поиска
+            results = (byFullName + byOrganization).distinctBy { it.id }
+        } else {
+            results = requestRepository.findAll()
+        }
+
+        // Фильтруем по типу пользователя, если указан
+        if (userType != null) {
+            results = results.filter { it.userType == userType }
+        }
+
+        // Фильтруем по статусу, если указан
+        if (status != null) {
+            results = results.filter { it.status == status }
+        }
+
+        return results.map { RequestResponseDto.fromEntity(it) }
+    }
+
+    @Transactional
+    fun updateRequestStatus(id: Long, status: RequestStatus): RequestResponseDto {
+        val request = requestRepository.findById(id)
+            .orElseThrow { ResourceNotFoundException("Request not found with id: $id") }
+
+        val updatedRequest = request.copy(status = status)
+        val savedRequest = requestRepository.save(updatedRequest)
+        return RequestResponseDto.fromEntity(savedRequest)
     }
 }

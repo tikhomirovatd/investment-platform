@@ -1,142 +1,130 @@
 package com.banking.api.service
 
-import com.banking.api.dto.CreateProjectRequest
-import com.banking.api.dto.ProjectResponse
-import com.banking.api.dto.UpdateProjectRequest
+import com.banking.api.dto.CreateProjectDto
+import com.banking.api.dto.ProjectResponseDto
+import com.banking.api.dto.UpdateProjectDto
 import com.banking.api.exception.ResourceNotFoundException
 import com.banking.api.model.DealType
 import com.banking.api.model.Project
 import com.banking.api.repository.ProjectRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 
-/**
- * Сервис для работы с проектами
- */
 @Service
 class ProjectService(private val projectRepository: ProjectRepository) {
 
-    /**
-     * Получить все проекты
-     */
-    fun getAllProjects(): List<ProjectResponse> {
-        return projectRepository.findAll().map { ProjectResponse.fromEntity(it) }
+    fun getAllProjects(): List<ProjectResponseDto> {
+        return projectRepository.findAll().map { ProjectResponseDto.fromEntity(it) }
     }
 
-    /**
-     * Получить проекты по статусу завершения
-     */
-    fun getProjectsByCompletionStatus(isCompleted: Boolean): List<ProjectResponse> {
-        return projectRepository.findByIsCompleted(isCompleted).map { ProjectResponse.fromEntity(it) }
-    }
-
-    /**
-     * Получить проект по ID
-     */
-    fun getProjectById(id: Long): ProjectResponse {
+    fun getProjectById(id: Long): ProjectResponseDto {
         val project = projectRepository.findById(id)
-            .orElseThrow { ResourceNotFoundException("Проект с ID $id не найден") }
-        return ProjectResponse.fromEntity(project)
+            .orElseThrow { ResourceNotFoundException("Project not found with id: $id") }
+        return ProjectResponseDto.fromEntity(project)
     }
 
-    /**
-     * Фильтрация проектов
-     */
-    fun filterProjects(search: String?, industry: String?, dealType: DealType?, isCompleted: Boolean?): List<ProjectResponse> {
-        val initialProjects = isCompleted?.let { 
-            projectRepository.findByIsCompleted(it)
-        } ?: projectRepository.findAll()
-        
-        val projects = initialProjects.filter { project ->
-            val matchesSearch = search.isNullOrBlank() || 
-                project.name.contains(search, ignoreCase = true) ||
-                project.industry.contains(search, ignoreCase = true)
-            
-            val matchesIndustry = industry.isNullOrBlank() ||
-                project.industry.contains(industry, ignoreCase = true)
-            
-            val matchesDealType = dealType == null || project.dealType == dealType
-            
-            matchesSearch && matchesIndustry && matchesDealType
-        }
-        
-        return projects.map { ProjectResponse.fromEntity(it) }
+    fun getProjectsByCompletionStatus(isCompleted: Boolean): List<ProjectResponseDto> {
+        return projectRepository.findByIsCompleted(isCompleted)
+            .map { ProjectResponseDto.fromEntity(it) }
     }
 
-    /**
-     * Создать новый проект
-     */
+    fun getVisibleProjects(isCompleted: Boolean): List<ProjectResponseDto> {
+        return projectRepository.findByIsCompletedAndIsVisible(isCompleted, true)
+            .map { ProjectResponseDto.fromEntity(it) }
+    }
+
     @Transactional
-    fun createProject(projectRequest: CreateProjectRequest): ProjectResponse {
+    fun createProject(createProjectDto: CreateProjectDto): ProjectResponseDto {
         val project = Project(
-            name = projectRequest.name,
-            dealType = projectRequest.dealType,
-            industry = projectRequest.industry,
-            isVisible = projectRequest.isVisible,
-            isCompleted = projectRequest.isCompleted,
-            contactName1 = projectRequest.contactName1,
-            contactPhone1 = projectRequest.contactPhone1,
-            contactPosition1 = projectRequest.contactPosition1,
-            contactPhone2 = projectRequest.contactPhone2,
-            inn = projectRequest.inn,
-            location = projectRequest.location,
-            revenue = projectRequest.revenue,
-            ebitda = projectRequest.ebitda,
-            price = projectRequest.price,
-            salePercent = projectRequest.salePercent,
-            website = projectRequest.website,
-            hideUntilNda = projectRequest.hideUntilNda,
-            comments = projectRequest.comments
+            name = createProjectDto.name,
+            dealType = createProjectDto.dealType,
+            industry = createProjectDto.industry,
+            createdAt = LocalDateTime.now(),
+            isVisible = createProjectDto.isVisible,
+            isCompleted = createProjectDto.isCompleted
         )
-        
+
         val savedProject = projectRepository.save(project)
-        return ProjectResponse.fromEntity(savedProject)
+        return ProjectResponseDto.fromEntity(savedProject)
     }
 
-    /**
-     * Обновить проект
-     */
     @Transactional
-    fun updateProject(id: Long, updateRequest: UpdateProjectRequest): ProjectResponse {
+    fun updateProject(id: Long, updateProjectDto: UpdateProjectDto): ProjectResponseDto {
         val existingProject = projectRepository.findById(id)
-            .orElseThrow { ResourceNotFoundException("Проект с ID $id не найден") }
-        
-        // Создаем копию объекта с обновленными полями
+            .orElseThrow { ResourceNotFoundException("Project not found with id: $id") }
+
         val updatedProject = existingProject.copy(
-            name = updateRequest.name ?: existingProject.name,
-            dealType = updateRequest.dealType ?: existingProject.dealType,
-            industry = updateRequest.industry ?: existingProject.industry,
-            isVisible = updateRequest.isVisible ?: existingProject.isVisible,
-            isCompleted = updateRequest.isCompleted ?: existingProject.isCompleted,
-            contactName1 = updateRequest.contactName1 ?: existingProject.contactName1,
-            contactPhone1 = updateRequest.contactPhone1 ?: existingProject.contactPhone1,
-            contactPosition1 = updateRequest.contactPosition1 ?: existingProject.contactPosition1,
-            contactPhone2 = updateRequest.contactPhone2 ?: existingProject.contactPhone2,
-            inn = updateRequest.inn ?: existingProject.inn,
-            location = updateRequest.location ?: existingProject.location,
-            revenue = updateRequest.revenue ?: existingProject.revenue,
-            ebitda = updateRequest.ebitda ?: existingProject.ebitda,
-            price = updateRequest.price ?: existingProject.price,
-            salePercent = updateRequest.salePercent ?: existingProject.salePercent,
-            website = updateRequest.website ?: existingProject.website,
-            hideUntilNda = updateRequest.hideUntilNda ?: existingProject.hideUntilNda,
-            comments = updateRequest.comments ?: existingProject.comments
+            name = updateProjectDto.name ?: existingProject.name,
+            dealType = updateProjectDto.dealType ?: existingProject.dealType,
+            industry = updateProjectDto.industry ?: existingProject.industry,
+            isVisible = updateProjectDto.isVisible ?: existingProject.isVisible,
+            isCompleted = updateProjectDto.isCompleted ?: existingProject.isCompleted
         )
-        
+
         val savedProject = projectRepository.save(updatedProject)
-        return ProjectResponse.fromEntity(savedProject)
+        return ProjectResponseDto.fromEntity(savedProject)
     }
 
-    /**
-     * Удалить проект
-     */
     @Transactional
-    fun deleteProject(id: Long): Boolean {
+    fun deleteProject(id: Long) {
         if (!projectRepository.existsById(id)) {
-            throw ResourceNotFoundException("Проект с ID $id не найден")
+            throw ResourceNotFoundException("Project not found with id: $id")
         }
-        
         projectRepository.deleteById(id)
-        return true
+    }
+
+    fun searchProjects(search: String?, dealType: DealType?, industry: String?, isCompleted: Boolean?): List<ProjectResponseDto> {
+        // Если параметры поиска не указаны, возвращаем все проекты
+        if (search.isNullOrBlank() && dealType == null && industry.isNullOrBlank() && isCompleted == null) {
+            return getAllProjects()
+        }
+
+        var results = listOf<Project>()
+
+        // Поиск по названию, если указано
+        if (!search.isNullOrBlank()) {
+            results = projectRepository.findByNameContainingIgnoreCase(search)
+        } else {
+            results = projectRepository.findAll()
+        }
+
+        // Фильтрация по типу сделки, если указан
+        if (dealType != null) {
+            results = results.filter { it.dealType == dealType }
+        }
+
+        // Фильтрация по отрасли, если указана
+        if (!industry.isNullOrBlank()) {
+            val industryProjects = projectRepository.findByIndustryContainingIgnoreCase(industry)
+            results = results.filter { project -> industryProjects.any { it.id == project.id } }
+        }
+
+        // Фильтрация по статусу завершения, если указан
+        if (isCompleted != null) {
+            results = results.filter { it.isCompleted == isCompleted }
+        }
+
+        return results.map { ProjectResponseDto.fromEntity(it) }
+    }
+
+    @Transactional
+    fun toggleProjectVisibility(id: Long): ProjectResponseDto {
+        val project = projectRepository.findById(id)
+            .orElseThrow { ResourceNotFoundException("Project not found with id: $id") }
+
+        val updatedProject = project.copy(isVisible = !project.isVisible)
+        val savedProject = projectRepository.save(updatedProject)
+        return ProjectResponseDto.fromEntity(savedProject)
+    }
+
+    @Transactional
+    fun toggleProjectCompletion(id: Long): ProjectResponseDto {
+        val project = projectRepository.findById(id)
+            .orElseThrow { ResourceNotFoundException("Project not found with id: $id") }
+
+        val updatedProject = project.copy(isCompleted = !project.isCompleted)
+        val savedProject = projectRepository.save(updatedProject)
+        return ProjectResponseDto.fromEntity(savedProject)
     }
 }

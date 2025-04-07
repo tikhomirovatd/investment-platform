@@ -4,91 +4,90 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.FieldError
 import org.springframework.web.bind.MethodArgumentNotValidException
-import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.context.request.WebRequest
 import java.time.LocalDateTime
 
-/**
- * Global exception handler for API
- */
-@ControllerAdvice
+@RestControllerAdvice
 class GlobalExceptionHandler {
 
-    /**
-     * Handle validation exceptions
-     */
-    @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun handleValidationExceptions(
-        ex: MethodArgumentNotValidException,
-        request: WebRequest
-    ): ResponseEntity<ErrorResponse> {
-        val errors = ex.bindingResult.fieldErrors.associate { it.field to (it.defaultMessage ?: "Validation error") }
-        
-        val errorResponse = ErrorResponse(
-            timestamp = LocalDateTime.now(),
-            status = HttpStatus.BAD_REQUEST.value(),
-            error = "Validation Error",
-            message = "There are validation errors",
-            path = request.getDescription(false).substringAfter("uri="),
-            details = errors
-        )
-        
-        return ResponseEntity.badRequest().body(errorResponse)
-    }
+    data class ErrorResponse(
+        val timestamp: LocalDateTime = LocalDateTime.now(),
+        val status: Int,
+        val error: String,
+        val message: String,
+        val path: String
+    )
 
-    /**
-     * Handle resource not found exception
-     */
+    data class ValidationErrorResponse(
+        val timestamp: LocalDateTime = LocalDateTime.now(),
+        val status: Int,
+        val error: String,
+        val message: String,
+        val path: String,
+        val fieldErrors: Map<String, String>
+    )
+
     @ExceptionHandler(ResourceNotFoundException::class)
-    fun handleResourceNotFoundException(
-        ex: ResourceNotFoundException,
-        request: WebRequest
-    ): ResponseEntity<ErrorResponse> {
+    fun handleResourceNotFoundException(ex: ResourceNotFoundException, request: WebRequest): ResponseEntity<ErrorResponse> {
         val errorResponse = ErrorResponse(
-            timestamp = LocalDateTime.now(),
             status = HttpStatus.NOT_FOUND.value(),
-            error = "Not Found",
-            message = ex.message,
-            path = request.getDescription(false).substringAfter("uri=")
+            error = HttpStatus.NOT_FOUND.reasonPhrase,
+            message = ex.message ?: "Resource not found",
+            path = request.getDescription(false).replace("uri=", "")
         )
-        
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse)
+        return ResponseEntity(errorResponse, HttpStatus.NOT_FOUND)
     }
 
-    /**
-     * Handle all other exceptions
-     */
-    @ExceptionHandler(Exception::class)
-    fun handleAllExceptions(
-        ex: Exception,
-        request: WebRequest
-    ): ResponseEntity<ErrorResponse> {
+    @ExceptionHandler(ResourceAlreadyExistsException::class)
+    fun handleResourceAlreadyExistsException(ex: ResourceAlreadyExistsException, request: WebRequest): ResponseEntity<ErrorResponse> {
         val errorResponse = ErrorResponse(
-            timestamp = LocalDateTime.now(),
-            status = HttpStatus.INTERNAL_SERVER_ERROR.value(),
-            error = "Internal Server Error",
-            message = ex.message ?: "Unexpected error occurred",
-            path = request.getDescription(false).substringAfter("uri=")
+            status = HttpStatus.CONFLICT.value(),
+            error = HttpStatus.CONFLICT.reasonPhrase,
+            message = ex.message ?: "Resource already exists",
+            path = request.getDescription(false).replace("uri=", "")
         )
-        
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse)
+        return ResponseEntity(errorResponse, HttpStatus.CONFLICT)
+    }
+
+    @ExceptionHandler(InvalidRequestException::class)
+    fun handleInvalidRequestException(ex: InvalidRequestException, request: WebRequest): ResponseEntity<ErrorResponse> {
+        val errorResponse = ErrorResponse(
+            status = HttpStatus.BAD_REQUEST.value(),
+            error = HttpStatus.BAD_REQUEST.reasonPhrase,
+            message = ex.message ?: "Invalid request",
+            path = request.getDescription(false).replace("uri=", "")
+        )
+        return ResponseEntity(errorResponse, HttpStatus.BAD_REQUEST)
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException::class)
+    fun handleValidationExceptions(ex: MethodArgumentNotValidException, request: WebRequest): ResponseEntity<ValidationErrorResponse> {
+        val fieldErrors = ex.bindingResult.allErrors.associate { error ->
+            val fieldName = (error as FieldError).field
+            val errorMessage = error.defaultMessage ?: "Invalid value"
+            fieldName to errorMessage
+        }
+
+        val errorResponse = ValidationErrorResponse(
+            status = HttpStatus.BAD_REQUEST.value(),
+            error = HttpStatus.BAD_REQUEST.reasonPhrase,
+            message = "Validation failed",
+            path = request.getDescription(false).replace("uri=", ""),
+            fieldErrors = fieldErrors
+        )
+        return ResponseEntity(errorResponse, HttpStatus.BAD_REQUEST)
+    }
+
+    @ExceptionHandler(Exception::class)
+    fun handleGlobalException(ex: Exception, request: WebRequest): ResponseEntity<ErrorResponse> {
+        val errorResponse = ErrorResponse(
+            status = HttpStatus.INTERNAL_SERVER_ERROR.value(),
+            error = HttpStatus.INTERNAL_SERVER_ERROR.reasonPhrase,
+            message = ex.message ?: "An unexpected error occurred",
+            path = request.getDescription(false).replace("uri=", "")
+        )
+        return ResponseEntity(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }
-
-/**
- * Error response model
- */
-data class ErrorResponse(
-    val timestamp: LocalDateTime,
-    val status: Int,
-    val error: String,
-    val message: String?,
-    val path: String,
-    val details: Map<String, String>? = null
-)
-
-/**
- * Exception thrown when a requested resource is not found
- */
-class ResourceNotFoundException(message: String) : RuntimeException(message)

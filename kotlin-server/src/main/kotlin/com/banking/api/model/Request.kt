@@ -3,9 +3,6 @@ package com.banking.api.model
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
-/**
- * Сущность заявки
- */
 @Entity
 @Table(name = "requests")
 data class Request(
@@ -17,7 +14,7 @@ data class Request(
     @Column(name = "user_type", nullable = false)
     val userType: UserType,
     
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     val topic: String,
     
     @Column(name = "created_at", nullable = false)
@@ -27,21 +24,21 @@ data class Request(
     @Column(nullable = false)
     val status: RequestStatus = RequestStatus.NEW,
     
-    @Column(name = "full_name", nullable = false)
+    @Column(name = "full_name", nullable = false, length = 200)
     val fullName: String,
     
-    @Column(name = "organization_name")
+    @Column(name = "organization_name", length = 200)
     val organizationName: String? = null,
     
-    @Column
+    @Column(length = 50)
     val cnum: String? = null,
     
-    @Column
+    @Column(length = 50)
     val login: String? = null,
     
-    @Column
+    @Column(length = 20)
     val phone: String? = null,
     
-    @Column
+    @Column(columnDefinition = "TEXT")
     val comments: String? = null
 )

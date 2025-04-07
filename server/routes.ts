@@ -1,6 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storageProxy } from "./kotlin-integration";
+import { storageProxy, checkKotlinServerAvailability, toggleKotlinServerUsage, isKotlinServerEnabled } from "./kotlin-integration";
 import { insertUserSchema, insertProjectSchema, insertRequestSchema } from "@shared/schema";
 import { z } from "zod";
 import { kotlinIntegrationErrorHandler } from "./kotlin-integration";
@@ -138,6 +138,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Server integration API
+  app.get("/api/server/status", async (req, res) => {
+    try {
+      const kotlinEnabled = isKotlinServerEnabled();
+      const kotlinAvailable = await checkKotlinServerAvailability();
+      
+      res.json({
+        js: {
+          status: "UP",
+          active: !kotlinEnabled || !kotlinAvailable
+        },
+        kotlin: {
+          status: kotlinAvailable ? "UP" : "DOWN",
+          active: kotlinEnabled && kotlinAvailable,
+          url: process.env.KOTLIN_SERVER_URL || 'http://localhost:8080/api'
+        },
+        current: kotlinEnabled && kotlinAvailable ? "kotlin" : "js"
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch server status" });
+    }
+  });
+  
+  app.post("/api/server/toggle", (req, res) => {
+    try {
+      const enabled = req.body.enabled;
+      
+      if (typeof enabled !== 'boolean') {
+        return res.status(400).json({ message: "Invalid parameter: enabled must be boolean" });
+      }
+      
+      toggleKotlinServerUsage(enabled);
+      
+      res.json({
+        message: enabled ? "Kotlin server integration enabled" : "Kotlin server integration disabled",
+        kotlinEnabled: isKotlinServerEnabled()
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to toggle server integration" });
+    }
+  });
+
+  // Create HTTP server
   const httpServer = createServer(app);
   return httpServer;
 }

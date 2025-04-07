@@ -3,9 +3,6 @@ package com.banking.api.model
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
-/**
- * Сущность пользователя
- */
 @Entity
 @Table(name = "users")
 data class User(
@@ -17,24 +14,21 @@ data class User(
     @Column(name = "user_type", nullable = false)
     val userType: UserType,
     
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 100)
     val username: String,
     
-    @Column(nullable = false)
-    val password: String,
-    
-    @Column(name = "organization_name", nullable = false)
+    @Column(name = "organization_name", nullable = false, length = 200)
     val organizationName: String,
     
-    @Column(name = "full_name", nullable = false)
+    @Column(name = "full_name", nullable = false, length = 200)
     val fullName: String,
     
-    @Column
+    @Column(length = 20)
     val phone: String? = null,
     
     @Column(name = "last_access")
     val lastAccess: LocalDateTime? = null,
     
-    @Column
+    @Column(columnDefinition = "TEXT")
     val comments: String? = null
 )

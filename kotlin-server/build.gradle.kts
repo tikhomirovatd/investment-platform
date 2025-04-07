@@ -32,6 +32,9 @@ dependencies {
     // Database
     implementation("org.postgresql:postgresql")
     
+    // Liquibase for database migrations
+    implementation("org.liquibase:liquibase-core")
+    
     // Documentation
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
     
