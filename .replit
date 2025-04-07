@@ -1,4 +1,4 @@
-modules = ["nodejs-20", "bash", "web", "kotlin"]
+modules = ["nodejs-20", "bash", "web", "kotlin", "openjdk-17"]
 run = "npm run dev"
 hidden = [".config", ".git", "generated-icon.png", "node_modules", "dist"]
 

@@ -1,66 +1,52 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
-    kotlin("jvm") version "1.9.24"
-    kotlin("plugin.serialization") version "1.9.24"
-    application
+    id("org.springframework.boot") version "3.2.0"
+    id("io.spring.dependency-management") version "1.1.4"
+    kotlin("jvm") version "1.9.21"
+    kotlin("plugin.spring") version "1.9.21"
+    kotlin("plugin.jpa") version "1.9.21"
 }
 
-group = "com.banking.api"
-version = "1.0-SNAPSHOT"
+group = "com.banking"
+version = "0.0.1-SNAPSHOT"
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+}
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
+    // Spring Boot
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+    
     // Kotlin
-    implementation("org.jetbrains.kotlin:kotlin-stdlib")
-    
-    // Ktor (Web framework)
-    implementation("io.ktor:ktor-server-core:2.3.7")
-    implementation("io.ktor:ktor-server-netty:2.3.7")
-    implementation("io.ktor:ktor-server-content-negotiation:2.3.7")
-    
-    // Serialization
-    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.7")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
-    
-    // Logging
-    implementation("ch.qos.logback:logback-classic:1.4.14")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
     
     // Database
-    implementation("org.jetbrains.exposed:exposed-core:0.46.0")
-    implementation("org.jetbrains.exposed:exposed-dao:0.46.0")
-    implementation("org.jetbrains.exposed:exposed-jdbc:0.46.0")
-    implementation("com.h2database:h2:2.2.224")
+    implementation("org.postgresql:postgresql")
+    
+    // Documentation
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
     
     // Testing
-    testImplementation("io.ktor:ktor-server-test-host:2.3.7")
-    testImplementation("org.jetbrains.kotlin:kotlin-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.0.0")
 }
 
-tasks.test {
-    useJUnitPlatform()
-}
-
-kotlin {
-    jvmToolchain(11)
-}
-
-application {
-    mainClass.set("com.banking.api.ApplicationKt")
-}
-
-tasks.jar {
-    manifest {
-        attributes["Main-Class"] = "com.banking.api.ApplicationKt"
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        freeCompilerArgs += "-Xjsr305=strict"
+        jvmTarget = "17"
     }
-    
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    
-    from(sourceSets.main.get().output)
-    
-    dependsOn(configurations.runtimeClasspath)
-    from({
-        configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
-    })
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }
