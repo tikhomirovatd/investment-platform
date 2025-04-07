@@ -24,32 +24,26 @@ export function MainTabs({ onCreateClick }: MainTabsProps) {
 
       <div className="mt-4">
         <nav className="flex">
-          <Link href="/requests">
-            <a className={`px-4 py-2 text-sm font-medium ${
-              location === "/requests" || location === "/"
-                ? "text-[rgb(43,45,51)] border-b-2 border-[rgb(43,45,51)]"
-                : "text-gray-500 hover:text-[rgb(43,45,51)] hover:border-[rgb(43,45,51)]"
-            }`}>
-              Запросы
-            </a>
+          <Link href="/requests" className={`px-4 py-2 text-sm font-medium ${
+            location === "/requests" || location === "/"
+              ? "text-[rgb(43,45,51)] border-b-2 border-[rgb(43,45,51)]"
+              : "text-gray-500 hover:text-[rgb(43,45,51)] hover:border-[rgb(43,45,51)]"
+          }`}>
+            Запросы
           </Link>
-          <Link href="/users">
-            <a className={`px-4 py-2 text-sm font-medium ${
-              location === "/users"
-                ? "text-[rgb(43,45,51)] border-b-2 border-[rgb(43,45,51)]"
-                : "text-gray-500 hover:text-[rgb(43,45,51)] hover:border-[rgb(43,45,51)]"
-            }`}>
-              Пользователи
-            </a>
+          <Link href="/users" className={`px-4 py-2 text-sm font-medium ${
+            location === "/users"
+              ? "text-[rgb(43,45,51)] border-b-2 border-[rgb(43,45,51)]"
+              : "text-gray-500 hover:text-[rgb(43,45,51)] hover:border-[rgb(43,45,51)]"
+          }`}>
+            Пользователи
           </Link>
-          <Link href="/projects">
-            <a className={`px-4 py-2 text-sm font-medium ${
-              location === "/projects"
-                ? "text-[rgb(43,45,51)] border-b-2 border-[rgb(43,45,51)]"
-                : "text-gray-500 hover:text-[rgb(43,45,51)] hover:border-[rgb(43,45,51)]"
-            }`}>
-              Проекты
-            </a>
+          <Link href="/projects" className={`px-4 py-2 text-sm font-medium ${
+            location === "/projects"
+              ? "text-[rgb(43,45,51)] border-b-2 border-[rgb(43,45,51)]"
+              : "text-gray-500 hover:text-[rgb(43,45,51)] hover:border-[rgb(43,45,51)]"
+          }`}>
+            Проекты
           </Link>
         </nav>
       </div>

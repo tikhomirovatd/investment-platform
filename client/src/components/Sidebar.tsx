@@ -40,12 +40,10 @@ export function Sidebar() {
         <ul>
           {menuItems.map((item) => (
             <li key={item.path}>
-              <Link href={item.path}>
-                <a className={`flex items-center px-4 py-3 text-sm hover:bg-gray-100 ${
-                  isItemActive(item.path) ? "bg-gray-100 font-medium" : ""
-                }`}>
-                  <span>{item.label}</span>
-                </a>
+              <Link href={item.path} className={`flex items-center px-4 py-3 text-sm hover:bg-gray-100 ${
+                isItemActive(item.path) ? "bg-gray-100 font-medium" : ""
+              }`}>
+                <span>{item.label}</span>
               </Link>
             </li>
           ))}
