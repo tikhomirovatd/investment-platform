@@ -87,9 +87,9 @@ class UserService(private val userRepository: UserRepository) {
         userRepository.deleteById(id)
     }
 
-    fun searchUsers(search: String?, userType: UserType?): List<UserResponseDto> {
+    fun searchUsers(search: String?, userType: UserType?, organization: String? = null): List<UserResponseDto> {
         // Если параметры поиска не указаны, возвращаем всех пользователей
-        if (search.isNullOrBlank() && userType == null) {
+        if (search.isNullOrBlank() && userType == null && organization.isNullOrBlank()) {
             return getAllUsers()
         }
 
@@ -110,6 +110,11 @@ class UserService(private val userRepository: UserRepository) {
         if (userType != null) {
             results = results.filter { it.userType == userType }
         }
+        
+        // Фильтруем по организации, если указана
+        if (!organization.isNullOrBlank()) {
+            results = results.filter { it.organizationName.contains(organization, ignoreCase = true) }
+        }
 
         return results.map { UserResponseDto.fromEntity(it) }
     }
@@ -122,5 +127,15 @@ class UserService(private val userRepository: UserRepository) {
         val updatedUser = user.copy(lastAccess = LocalDateTime.now())
         val savedUser = userRepository.save(updatedUser)
         return UserResponseDto.fromEntity(savedUser)
+    }
+    
+    /**
+     * Получает список пользователей определенного типа
+     * @param userType Тип пользователя для фильтрации
+     * @return Список пользователей указанного типа в формате DTO
+     */
+    fun getUsersByType(userType: UserType): List<UserResponseDto> {
+        val users = userRepository.findByUserType(userType)
+        return users.map { UserResponseDto.fromEntity(it) }
     }
 }
