@@ -1,6 +1,7 @@
 package com.banking.api.controller
 
 import com.banking.api.dto.CreateUserDto
+import com.banking.api.dto.UpdateUserDto
 import com.banking.api.dto.UserResponseDto
 import com.banking.api.model.UserType
 import com.banking.api.service.UserService
@@ -59,7 +60,7 @@ class UserController(private val userService: UserService) {
     @Operation(summary = "Update user", description = "Update an existing user's information")
     fun updateUser(
         @PathVariable id: Long,
-        @Valid @RequestBody updateUserDto: CreateUserDto
+        @Valid @RequestBody updateUserDto: UpdateUserDto
     ): ResponseEntity<UserResponseDto> {
         val updatedUser = userService.updateUser(id, updateUserDto)
         return ResponseEntity.ok(updatedUser)
